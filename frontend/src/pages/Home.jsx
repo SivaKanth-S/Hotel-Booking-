@@ -92,7 +92,7 @@ export const Home = () => {
         <div className="container" style={{ textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
             <span className="badge badge-primary">
-              <Sparkles size={13} color="#a5b4fc" />
+              <Sparkles size={13} />
               Next-Gen Luxury Hospitality Platform
             </span>
           </div>
@@ -131,15 +131,15 @@ export const Home = () => {
                 width: '48px',
                 height: '48px',
                 borderRadius: '12px',
-                background: 'rgba(99, 102, 241, 0.15)',
+                background: 'rgba(99, 102, 241, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <ShieldCheck size={26} color="#818cf8" />
+                <ShieldCheck size={26} color="var(--primary)" />
               </div>
               <div>
-                <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700 }}>Atomic Reservations</h4>
+                <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700 }}>Atomic Reservations</h4>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Guaranteed zero double-bookings with transactional locks.</p>
               </div>
             </div>
@@ -149,15 +149,15 @@ export const Home = () => {
                 width: '48px',
                 height: '48px',
                 borderRadius: '12px',
-                background: 'rgba(16, 185, 129, 0.15)',
+                background: 'rgba(16, 185, 129, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <Clock size={26} color="#34d399" />
+                <Clock size={26} color="var(--success)" />
               </div>
               <div>
-                <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700 }}>Live Availability</h4>
+                <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700 }}>Live Availability</h4>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Check room vacancies per calendar date instantaneously.</p>
               </div>
             </div>
@@ -167,15 +167,15 @@ export const Home = () => {
                 width: '48px',
                 height: '48px',
                 borderRadius: '12px',
-                background: 'rgba(245, 158, 11, 0.15)',
+                background: 'rgba(245, 158, 11, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <Award size={26} color="#fbbf24" />
+                <Award size={26} color="var(--accent-gold)" />
               </div>
               <div>
-                <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700 }}>Curated Luxury</h4>
+                <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700 }}>Curated Luxury</h4>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Verified 5-star standards with premium hospitality perks.</p>
               </div>
             </div>
@@ -196,7 +196,7 @@ export const Home = () => {
           }}>
             <div>
               <span className="badge badge-primary" style={{ marginBottom: '8px' }}>Handpicked Stays</span>
-              <h2 className="heading-serif" style={{ fontSize: '2.2rem', color: '#fff' }}>
+              <h2 className="heading-serif" style={{ fontSize: '2.2rem', color: 'var(--text-heading)' }}>
                 Featured Hotels & Resorts
               </h2>
             </div>
@@ -221,11 +221,11 @@ export const Home = () => {
       </section>
 
       {/* Curated Destinations Section */}
-      <section style={{ padding: '40px 0 80px 0', background: 'rgba(0, 0, 0, 0.2)' }}>
+      <section style={{ padding: '40px 0 80px 0', background: 'var(--bg-glass)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <span className="badge badge-gold" style={{ marginBottom: '8px' }}>Global Hotspots</span>
-            <h2 className="heading-serif" style={{ fontSize: '2.2rem', color: '#fff' }}>
+            <h2 className="heading-serif" style={{ fontSize: '2.2rem', color: 'var(--text-heading)' }}>
               Explore Iconic Destinations
             </h2>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '8px auto 0' }}>
@@ -276,10 +276,10 @@ export const Home = () => {
                   <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 600, textTransform: 'uppercase' }}>
                     {dest.country}
                   </span>
-                  <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff' }}>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ffffff' }}>
                     {dest.city}
                   </h3>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
                     {dest.count}
                   </span>
                 </div>
@@ -294,7 +294,7 @@ export const Home = () => {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <span className="badge badge-success" style={{ marginBottom: '8px' }}>Guest Reviews</span>
-            <h2 className="heading-serif" style={{ fontSize: '2.2rem', color: '#fff' }}>
+            <h2 className="heading-serif" style={{ fontSize: '2.2rem', color: 'var(--text-heading)' }}>
               Loved by Travelers Worldwide
             </h2>
           </div>
@@ -310,11 +310,11 @@ export const Home = () => {
                 "Booking the Presidential Suite at Grand Palace took seconds. Real-time availability was accurate, and the checkout was completely seamless."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#ffffff' }}>
                   S
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>Sophia Laurent</h4>
+                  <h4 style={{ fontSize: '0.9rem', color: 'var(--text-heading)', fontWeight: 600 }}>Sophia Laurent</h4>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Verified Booking &bull; New York</span>
                 </div>
               </div>
@@ -330,11 +330,11 @@ export const Home = () => {
                 "The discount code WELCOME10 saved us over $100 on our anniversary trip to Miami. Received the confirmation code instantly!"
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#ffffff' }}>
                   M
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>Marcus Vance</h4>
+                  <h4 style={{ fontSize: '0.9rem', color: 'var(--text-heading)', fontWeight: 600 }}>Marcus Vance</h4>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Verified Booking &bull; Miami</span>
                 </div>
               </div>
@@ -350,11 +350,11 @@ export const Home = () => {
                 "High quality platform. Loved the simple 'My Bookings' interface that allowed me to view my reservation number and check-in dates clearly."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#ffffff' }}>
                   E
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>Elena Rostova</h4>
+                  <h4 style={{ fontSize: '0.9rem', color: 'var(--text-heading)', fontWeight: 600 }}>Elena Rostova</h4>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Verified Booking &bull; Paris</span>
                 </div>
               </div>

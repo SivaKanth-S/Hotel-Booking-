@@ -32,8 +32,8 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
     <form onSubmit={handleSearch} className="glass-panel" style={{
       padding: '20px',
       borderRadius: 'var(--radius-lg)',
-      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), var(--shadow-glow)',
-      background: 'rgba(17, 24, 39, 0.92)'
+      boxShadow: 'var(--shadow-lg), var(--shadow-glow)',
+      background: 'var(--bg-card)'
     }}>
       <div style={{
         display: 'grid',
@@ -44,7 +44,7 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
         {/* Destination / City */}
         <div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-            <MapPin size={14} color="#818cf8" /> Destination / City
+            <MapPin size={14} color="var(--primary)" /> Destination / City
           </label>
           <input
             type="text"
@@ -59,7 +59,7 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
         {/* Check-in Date */}
         <div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-            <Calendar size={14} color="#818cf8" /> Check-In
+            <Calendar size={14} color="var(--primary)" /> Check-In
           </label>
           <input
             type="date"
@@ -73,7 +73,7 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
         {/* Check-out Date */}
         <div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-            <Calendar size={14} color="#818cf8" /> Check-Out
+            <Calendar size={14} color="var(--primary)" /> Check-Out
           </label>
           <input
             type="date"
@@ -87,7 +87,7 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
         {/* Guests */}
         <div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-            <Users size={14} color="#818cf8" /> Guests
+            <Users size={14} color="var(--primary)" /> Guests
           </label>
           <select
             value={guests}

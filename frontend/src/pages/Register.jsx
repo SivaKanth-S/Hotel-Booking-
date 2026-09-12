@@ -59,7 +59,7 @@ export const Register = () => {
             width: '52px',
             height: '52px',
             borderRadius: '14px',
-            background: 'linear-gradient(135deg, #6366f1, #ec4899)',
+            background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -68,7 +68,7 @@ export const Register = () => {
           }}>
             <Hotel size={28} color="#fff" />
           </div>
-          <h1 className="heading-serif" style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '6px' }}>
+          <h1 className="heading-serif" style={{ fontSize: '1.8rem', color: 'var(--text-heading)', marginBottom: '6px' }}>
             Create Your Account
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
@@ -138,7 +138,7 @@ export const Register = () => {
 
         <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: '#818cf8', fontWeight: 600 }}>
+          <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
             Sign In
           </Link>
         </div>

@@ -149,7 +149,7 @@ export const HotelList = () => {
   return (
     <div className="container" style={{ padding: '40px 24px' }}>
       <div style={{ marginBottom: '32px' }}>
-        <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: '#fff', marginBottom: '8px' }}>
+        <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: 'var(--text-heading)', marginBottom: '8px' }}>
           Explore Luxury Accommodations
         </h1>
         <p style={{ color: 'var(--text-secondary)' }}>
@@ -167,12 +167,12 @@ export const HotelList = () => {
         <div className="glass-panel" style={{ padding: '24px', position: 'sticky', top: '100px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Filter size={18} color="#818cf8" />
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>Filters</h3>
+              <Filter size={18} color="var(--primary)" />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading)' }}>Filters</h3>
             </div>
             <button
               onClick={handleResetFilters}
-              style={{ background: 'transparent', border: 'none', color: '#818cf8', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--primary)', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}
             >
               <RotateCcw size={12} /> Reset
             </button>
@@ -206,7 +206,7 @@ export const HotelList = () => {
                     name="starRating"
                     checked={minRating === opt.value}
                     onChange={() => setMinRating(opt.value)}
-                    style={{ accentColor: '#6366f1' }}
+                    style={{ accentColor: 'var(--primary)' }}
                   />
                   <span>{opt.label}</span>
                 </label>
@@ -218,7 +218,7 @@ export const HotelList = () => {
           <div className="form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
               <label className="form-label" style={{ margin: 0 }}>Max Price per Night</label>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#818cf8' }}>${maxPrice}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)' }}>${maxPrice}</span>
             </div>
             <input
               type="range"
@@ -227,7 +227,7 @@ export const HotelList = () => {
               step={25}
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#6366f1' }}
+              style={{ width: '100%', accentColor: 'var(--primary)' }}
             />
           </div>
 
@@ -249,9 +249,9 @@ export const HotelList = () => {
                       fontWeight: 600,
                       cursor: 'pointer',
                       border: '1px solid',
-                      background: selected ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                      borderColor: selected ? '#6366f1' : 'var(--border-glass)',
-                      color: selected ? '#a5b4fc' : 'var(--text-secondary)'
+                      background: selected ? 'var(--primary-light)' : 'var(--bg-glass)',
+                      borderColor: selected ? 'var(--primary)' : 'var(--border-glass)',
+                      color: selected ? 'var(--primary)' : 'var(--text-secondary)'
                     }}
                   >
                     {amenity}
@@ -274,7 +274,7 @@ export const HotelList = () => {
             borderBottom: '1px solid var(--border-glass)'
           }}>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-              Showing <strong>{filteredHotels.length}</strong> available stays
+              Showing <strong style={{ color: 'var(--text-heading)' }}>{filteredHotels.length}</strong> available stays
             </span>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -299,8 +299,8 @@ export const HotelList = () => {
             </div>
           ) : filteredHotels.length === 0 ? (
             <div className="glass-panel" style={{ textAlign: 'center', padding: '60px 20px' }}>
-              <Search size={40} color="#6b7280" style={{ marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '8px' }}>No properties found</h3>
+              <Search size={40} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
+              <h3 style={{ fontSize: '1.2rem', color: 'var(--text-heading)', marginBottom: '8px' }}>No properties found</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
                 Try adjusting your search criteria or resetting filters.
               </p>

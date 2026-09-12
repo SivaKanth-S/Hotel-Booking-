@@ -98,7 +98,7 @@ export const MyBookings = () => {
   return (
     <div className="container" style={{ padding: '40px 24px 80px 24px' }}>
       <div style={{ marginBottom: '32px' }}>
-        <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: '#fff', marginBottom: '8px' }}>
+        <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: 'var(--text-heading)', marginBottom: '8px' }}>
           My Reservations & History
         </h1>
         <p style={{ color: 'var(--text-secondary)' }}>
@@ -117,9 +117,9 @@ export const MyBookings = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             style={{
-              background: activeTab === tab.id ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-              borderColor: activeTab === tab.id ? '#6366f1' : 'transparent',
-              color: activeTab === tab.id ? '#fff' : 'var(--text-secondary)',
+              background: activeTab === tab.id ? 'var(--primary-light)' : 'transparent',
+              borderColor: activeTab === tab.id ? 'var(--primary)' : 'transparent',
+              color: activeTab === tab.id ? 'var(--primary)' : 'var(--text-secondary)',
               padding: '8px 16px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid',
@@ -139,8 +139,8 @@ export const MyBookings = () => {
         </div>
       ) : filteredBookings.length === 0 ? (
         <div className="glass-panel" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <Calendar size={48} color="#6b7280" style={{ marginBottom: '16px' }} />
-          <h3 style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '8px' }}>No reservations found</h3>
+          <Calendar size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
+          <h3 style={{ fontSize: '1.2rem', color: 'var(--text-heading)', marginBottom: '8px' }}>No reservations found</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
             {activeTab === 'ALL'
               ? 'You haven\'t made any bookings yet. Start exploring luxury hotels!'
@@ -176,43 +176,43 @@ export const MyBookings = () => {
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
                       <span style={{ color: 'var(--text-muted)' }}>Reservation Code:</span>
-                      <strong style={{ color: '#818cf8', letterSpacing: '0.04em' }}>{booking.reservationNumber}</strong>
+                      <strong style={{ color: 'var(--primary)', letterSpacing: '0.04em' }}>{booking.reservationNumber}</strong>
                       <button
                         onClick={() => copyCode(booking.id, booking.reservationNumber)}
-                        style={{ background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer' }}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
                         title="Copy code"
                       >
-                        {copiedId === booking.id ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                        {copiedId === booking.id ? <Check size={14} color="var(--success)" /> : <Copy size={14} />}
                       </button>
                     </div>
                   </div>
 
-                  <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '6px' }}>
                     {booking.hotelName}
                   </h3>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '14px' }}>
-                    <MapPin size={14} color="#818cf8" />
+                    <MapPin size={14} color="var(--primary)" />
                     <span>{booking.hotelCity || 'Destination'}</span>
                     <span>&bull;</span>
-                    <strong style={{ color: '#e5e7eb' }}>{booking.roomCategory}</strong>
+                    <strong style={{ color: 'var(--text-primary)' }}>{booking.roomCategory}</strong>
                   </div>
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                     <div>
                       <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem' }}>Check-In Date</span>
-                      <strong style={{ color: '#fff' }}>{booking.checkInDate}</strong>
+                      <strong style={{ color: 'var(--text-heading)' }}>{booking.checkInDate}</strong>
                     </div>
                     <div>
                       <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem' }}>Check-Out Date</span>
-                      <strong style={{ color: '#fff' }}>{booking.checkOutDate}</strong>
+                      <strong style={{ color: 'var(--text-heading)' }}>{booking.checkOutDate}</strong>
                     </div>
                     <div>
                       <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem' }}>Guests</span>
-                      <strong style={{ color: '#fff' }}>{booking.numGuests || 2} Guests</strong>
+                      <strong style={{ color: 'var(--text-heading)' }}>{booking.numGuests || 2} Guests</strong>
                     </div>
                     <div>
                       <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem' }}>Total Paid</span>
-                      <strong style={{ color: '#6ee7b7' }}>${booking.totalPrice}</strong>
+                      <strong style={{ color: 'var(--success)' }}>${booking.totalPrice}</strong>
                     </div>
                   </div>
                 </div>

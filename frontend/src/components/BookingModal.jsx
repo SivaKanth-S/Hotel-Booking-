@@ -71,7 +71,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
       const result = await promotionService.validatePromo(promoCode.trim().toUpperCase());
       if (result.valid) {
         setPromoDiscount(result);
-        showSuccess(`Promo "${promoCode.toUpperCase()}" applied! You saved $${result.discountType === 'PERCENTAGE' ? `${result.discountValue}%` : `$${result.discountValue}`}`);
+        showSuccess(`Promo "${promoCode.toUpperCase()}" applied! You saved ${result.discountType === 'PERCENTAGE' ? `${result.discountValue}%` : `$${result.discountValue}`}`);
       } else {
         setPromoDiscount(null);
         showError(result.message || 'Invalid promotion code');
@@ -146,9 +146,9 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
             position: 'absolute',
             top: '20px',
             right: '20px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: 'none',
-            color: '#9ca3af',
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--border-glass)',
+            color: 'var(--text-secondary)',
             width: '32px',
             height: '32px',
             borderRadius: '50%',
@@ -175,19 +175,19 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
               justifyContent: 'center',
               margin: '0 auto 16px'
             }}>
-              <CheckCircle2 size={36} color="#10b981" />
+              <CheckCircle2 size={36} color="var(--success)" />
             </div>
 
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '8px' }}>
               Reservation Confirmed!
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '24px' }}>
-              Your stay at <strong style={{ color: '#fff' }}>{hotel?.name || 'GrandStay Resort'}</strong> has been booked and guaranteed.
+              Your stay at <strong style={{ color: 'var(--text-heading)' }}>{hotel?.name || 'GrandStay Resort'}</strong> has been booked and guaranteed.
             </p>
 
             {/* Reservation Card */}
             <div style={{
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: 'var(--bg-glass)',
               border: '1px dashed var(--border-glass-hover)',
               borderRadius: 'var(--radius-md)',
               padding: '20px',
@@ -197,7 +197,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Reservation Number:</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#818cf8', letterSpacing: '0.05em' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.05em' }}>
                     {confirmedBooking.reservationNumber}
                   </span>
                   <button
@@ -206,7 +206,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                     style={{ padding: '4px 8px' }}
                     title="Copy code"
                   >
-                    {copied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                    {copied ? <Check size={14} color="var(--success)" /> : <Copy size={14} />}
                   </button>
                 </div>
               </div>
@@ -214,19 +214,19 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.85rem' }}>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block' }}>Room Category</span>
-                  <strong style={{ color: '#fff' }}>{room.category}</strong>
+                  <strong style={{ color: 'var(--text-heading)' }}>{room.category}</strong>
                 </div>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block' }}>Guests</span>
-                  <strong style={{ color: '#fff' }}>{numGuests} Guests</strong>
+                  <strong style={{ color: 'var(--text-heading)' }}>{numGuests} Guests</strong>
                 </div>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block' }}>Dates</span>
-                  <strong style={{ color: '#fff' }}>{checkInDate} &rarr; {checkOutDate} ({nights} nights)</strong>
+                  <strong style={{ color: 'var(--text-heading)' }}>{checkInDate} &rarr; {checkOutDate} ({nights} nights)</strong>
                 </div>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block' }}>Total Paid</span>
-                  <strong style={{ color: '#6ee7b7' }}>${confirmedBooking.totalPrice || finalTotal}</strong>
+                  <strong style={{ color: 'var(--success)' }}>${confirmedBooking.totalPrice || finalTotal}</strong>
                 </div>
               </div>
             </div>
@@ -251,7 +251,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
           <div>
             <div style={{ marginBottom: '20px' }}>
               <span className="badge badge-primary" style={{ marginBottom: '8px' }}>Secure Checkout</span>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                 Book {room.category}
               </h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
@@ -319,7 +319,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                   </button>
                 </div>
                 {promoDiscount && (
-                  <span style={{ fontSize: '0.8rem', color: '#6ee7b7', marginTop: '4px', display: 'block' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--success)', marginTop: '4px', display: 'block' }}>
                     &check; Promo code applied successfully!
                   </span>
                 )}
@@ -327,7 +327,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
 
               {/* Pricing Breakdown Card */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.03)',
+                background: 'var(--bg-glass)',
                 border: '1px solid var(--border-glass)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '16px',
@@ -335,15 +335,15 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
                   <span>${room.pricePerNight} &times; {nights} {nights === 1 ? 'night' : 'nights'}</span>
-                  <span style={{ color: '#fff' }}>${basePrice}</span>
+                  <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>${basePrice}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
                   <span>Estimated Taxes & Fees (12%)</span>
-                  <span style={{ color: '#fff' }}>${taxesAndFees}</span>
+                  <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>${taxesAndFees}</span>
                 </div>
 
                 {discountAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: '#6ee7b7' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--success)' }}>
                     <span>Promotion Discount</span>
                     <span>-${discountAmount}</span>
                   </div>
@@ -357,8 +357,8 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                   justifyContent: 'space-between',
                   alignItems: 'baseline'
                 }}>
-                  <span style={{ fontWeight: 700, color: '#fff' }}>Total Amount</span>
-                  <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#818cf8' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--text-heading)' }}>Total Amount</span>
+                  <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary)' }}>
                     ${finalTotal}
                   </span>
                 </div>
@@ -375,7 +375,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '12px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                <ShieldCheck size={14} color="#10b981" />
+                <ShieldCheck size={14} color="var(--success)" />
                 <span>Instant Confirmation &bull; Concurrency Protected &bull; Flexible Cancellation</span>
               </div>
             </form>

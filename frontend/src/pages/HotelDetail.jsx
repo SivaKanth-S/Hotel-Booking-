@@ -102,7 +102,7 @@ export const HotelDetail = () => {
   if (!hotel) {
     return (
       <div className="container" style={{ padding: '80px 24px', textAlign: 'center' }}>
-        <h2 style={{ color: '#fff', marginBottom: '16px' }}>Hotel Not Found</h2>
+        <h2 style={{ color: 'var(--text-heading)', marginBottom: '16px' }}>Hotel Not Found</h2>
         <Link to="/hotels" className="btn btn-primary">Back to Hotels</Link>
       </div>
     );
@@ -132,7 +132,7 @@ export const HotelDetail = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-            <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: '#fff' }}>
+            <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: 'var(--text-heading)' }}>
               {hotel.name}
             </h1>
             <div style={{
@@ -143,7 +143,7 @@ export const HotelDetail = () => {
               border: '1px solid rgba(245, 158, 11, 0.3)',
               padding: '4px 10px',
               borderRadius: 'var(--radius-full)',
-              color: '#fcd34d',
+              color: 'var(--accent-gold)',
               fontWeight: 700,
               fontSize: '0.85rem'
             }}>
@@ -152,7 +152,7 @@ export const HotelDetail = () => {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-            <MapPin size={16} color="#818cf8" />
+            <MapPin size={16} color="var(--primary)" />
             <span>{hotel.address}, {hotel.city}, {hotel.country}</span>
           </div>
         </div>
@@ -197,14 +197,14 @@ export const HotelDetail = () => {
       {/* Overview & Amenities Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px', marginBottom: '60px' }} className="hotel-detail-grid">
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '16px' }}>
             About the Property
           </h2>
           <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '0.95rem', marginBottom: '28px' }}>
             {hotel.description}
           </p>
 
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '16px' }}>
             Property Amenities
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
@@ -214,13 +214,13 @@ export const HotelDetail = () => {
                 alignItems: 'center',
                 gap: '8px',
                 padding: '10px 14px',
-                background: 'rgba(255, 255, 255, 0.03)',
+                background: 'var(--bg-glass)',
                 borderRadius: 'var(--radius-sm)',
                 border: '1px solid var(--border-glass)',
                 fontSize: '0.85rem',
-                color: '#e5e7eb'
+                color: 'var(--text-primary)'
               }}>
-                <Check size={14} color="#10b981" />
+                <Check size={14} color="var(--success)" />
                 <span>{amenity}</span>
               </div>
             ))}
@@ -229,8 +229,8 @@ export const HotelDetail = () => {
 
         {/* Date Selector Box */}
         <div className="glass-panel" style={{ padding: '24px', alignSelf: 'start' }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Calendar size={18} color="#818cf8" /> Check Date Availability
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Calendar size={18} color="var(--primary)" /> Check Date Availability
           </h3>
           <div className="form-group">
             <label className="form-label">Check-In Date</label>
@@ -250,7 +250,7 @@ export const HotelDetail = () => {
               className="form-input"
             />
           </div>
-          <div style={{ padding: '12px', background: 'rgba(99, 102, 241, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(99, 102, 241, 0.2)', fontSize: '0.8rem', color: '#a5b4fc' }}>
+          <div style={{ padding: '12px', background: 'var(--primary-light)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-glass-hover)', fontSize: '0.8rem', color: 'var(--primary)' }}>
             &bull; Live availability is calculated per selected date range below.
           </div>
         </div>
@@ -260,7 +260,7 @@ export const HotelDetail = () => {
       <div>
         <div style={{ marginBottom: '28px' }}>
           <span className="badge badge-gold" style={{ marginBottom: '8px' }}>Available Suites</span>
-          <h2 className="heading-serif" style={{ fontSize: '2rem', color: '#fff' }}>
+          <h2 className="heading-serif" style={{ fontSize: '2rem', color: 'var(--text-heading)' }}>
             Select Your Room Category
           </h2>
         </div>
@@ -298,7 +298,7 @@ export const HotelDetail = () => {
                 {/* Room Details */}
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                    <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff' }}>
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                       {room.category}
                     </h3>
                     <span className="badge badge-primary">
@@ -311,7 +311,8 @@ export const HotelDetail = () => {
                       <span key={idx} style={{
                         fontSize: '0.8rem',
                         padding: '4px 10px',
-                        background: 'rgba(255, 255, 255, 0.05)',
+                        background: 'var(--bg-glass)',
+                        border: '1px solid var(--border-glass)',
                         borderRadius: '4px',
                         color: 'var(--text-secondary)'
                       }}>
@@ -320,7 +321,7 @@ export const HotelDetail = () => {
                     ))}
                   </div>
 
-                  <div style={{ fontSize: '0.8rem', color: '#6ee7b7' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--success)' }}>
                     &check; Free cancellation up to 48h prior &bull; Instant Confirmation
                   </div>
                 </div>
@@ -338,7 +339,7 @@ export const HotelDetail = () => {
                   <div style={{ textAlign: 'right', marginBottom: '16px' }}>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block' }}>Rate per night</span>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', justifyContent: 'flex-end' }}>
-                      <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff' }}>
+                      <span style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-heading)' }}>
                         ${room.pricePerNight}
                       </span>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/ night</span>

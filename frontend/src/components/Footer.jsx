@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 export const Footer = () => {
   return (
     <footer style={{
-      background: '#070a11',
+      background: 'var(--bg-footer)',
       borderTop: '1px solid var(--border-glass)',
       padding: '60px 0 30px 0',
-      color: 'var(--text-secondary)'
+      color: 'var(--text-secondary)',
+      transition: 'background 0.3s ease, border-color 0.3s ease'
     }}>
       <div className="container">
         <div style={{
@@ -23,14 +24,14 @@ export const Footer = () => {
                 width: '36px',
                 height: '36px',
                 borderRadius: '10px',
-                background: 'linear-gradient(135deg, #6366f1, #ec4899)',
+                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
                 <Hotel size={20} color="#fff" />
               </div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>GRANDSTAY</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>GRANDSTAY</span>
             </div>
             <p style={{ fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
               The quintessential luxury hospitality platform. Concurrency-safe atomic reservations, curated suites, and unmatched travel experiences worldwide.
@@ -42,7 +43,7 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Quick Navigation</h4>
+            <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Quick Navigation</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
               <li><Link to="/" style={{ transition: '0.2s' }}>Home</Link></li>
               <li><Link to="/hotels" style={{ transition: '0.2s' }}>Explore All Hotels</Link></li>
@@ -52,7 +53,7 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Popular Destinations</h4>
+            <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Popular Destinations</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
               <li><Link to="/hotels?city=New York">New York City, USA</Link></li>
               <li><Link to="/hotels?city=Miami">Miami South Beach, USA</Link></li>
@@ -62,18 +63,18 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Security & Platform</h4>
+            <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Security & Platform</h4>
             <p style={{ fontSize: '0.85rem', lineHeight: '1.6', marginBottom: '12px' }}>
               Powered by Spring Boot 3 & React with stateless BCrypt + JWT security and isolated database transactions.
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: '#6ee7b7' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'var(--success)' }}>
               <Zap size={15} /> <span>100% Real-time Availability Sync</span>
             </div>
           </div>
         </div>
 
         <div style={{
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          borderTop: '1px solid var(--border-glass)',
           paddingTop: '24px',
           display: 'flex',
           flexWrap: 'wrap',

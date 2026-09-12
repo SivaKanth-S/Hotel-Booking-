@@ -136,7 +136,7 @@ export const AdminDashboard = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
             <span className="badge badge-primary"><Shield size={13} /> Admin Console</span>
           </div>
-          <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: '#fff' }}>
+          <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: 'var(--text-heading)' }}>
             Property & Reservation Management
           </h1>
         </div>
@@ -155,32 +155,32 @@ export const AdminDashboard = () => {
       {/* KPI Metrics Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '36px' }}>
         <div className="glass-panel" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Building2 size={24} color="#818cf8" />
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Building2 size={24} color="var(--primary)" />
           </div>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Total Properties</span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>{hotels.length}</h3>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-heading)' }}>{hotels.length}</h3>
           </div>
         </div>
 
         <div className="glass-panel" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <CalendarCheck size={24} color="#34d399" />
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CalendarCheck size={24} color="var(--success)" />
           </div>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Total Bookings</span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>{bookings.length}</h3>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-heading)' }}>{bookings.length}</h3>
           </div>
         </div>
 
         <div className="glass-panel" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(245, 158, 11, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <DollarSign size={24} color="#fbbf24" />
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(245, 158, 11, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <DollarSign size={24} color="var(--accent-gold)" />
           </div>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Confirmed Revenue</span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#6ee7b7' }}>${totalRevenue}</h3>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--success)' }}>${totalRevenue}</h3>
           </div>
         </div>
       </div>
@@ -190,9 +190,9 @@ export const AdminDashboard = () => {
         <button
           onClick={() => setActiveTab('HOTELS')}
           style={{
-            background: activeTab === 'HOTELS' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-            borderColor: activeTab === 'HOTELS' ? '#6366f1' : 'transparent',
-            color: activeTab === 'HOTELS' ? '#fff' : 'var(--text-secondary)',
+            background: activeTab === 'HOTELS' ? 'var(--primary-light)' : 'transparent',
+            borderColor: activeTab === 'HOTELS' ? 'var(--primary)' : 'transparent',
+            color: activeTab === 'HOTELS' ? 'var(--primary)' : 'var(--text-secondary)',
             padding: '8px 16px',
             borderRadius: 'var(--radius-sm)',
             border: '1px solid',
@@ -205,9 +205,9 @@ export const AdminDashboard = () => {
         <button
           onClick={() => setActiveTab('BOOKINGS')}
           style={{
-            background: activeTab === 'BOOKINGS' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-            borderColor: activeTab === 'BOOKINGS' ? '#6366f1' : 'transparent',
-            color: activeTab === 'BOOKINGS' ? '#fff' : 'var(--text-secondary)',
+            background: activeTab === 'BOOKINGS' ? 'var(--primary-light)' : 'transparent',
+            borderColor: activeTab === 'BOOKINGS' ? 'var(--primary)' : 'transparent',
+            color: activeTab === 'BOOKINGS' ? 'var(--primary)' : 'var(--text-secondary)',
             padding: '8px 16px',
             borderRadius: 'var(--radius-sm)',
             border: '1px solid',
@@ -235,7 +235,7 @@ export const AdminDashboard = () => {
               }}
             >
               <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '4px' }}>
                   {hotel.name}
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -281,16 +281,16 @@ export const AdminDashboard = () => {
             </thead>
             <tbody>
               {bookings.map((b) => (
-                <tr key={b.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                  <td style={{ padding: '16px', fontWeight: 700, color: '#818cf8' }}>{b.reservationNumber}</td>
+                <tr key={b.id} style={{ borderBottom: '1px solid var(--border-glass)' }}>
+                  <td style={{ padding: '16px', fontWeight: 700, color: 'var(--primary)' }}>{b.reservationNumber}</td>
                   <td style={{ padding: '16px' }}>
-                    <div style={{ color: '#fff', fontWeight: 600 }}>{b.hotelName}</div>
+                    <div style={{ color: 'var(--text-heading)', fontWeight: 600 }}>{b.hotelName}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{b.roomCategory}</div>
                   </td>
                   <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>
                     {b.checkInDate} &rarr; {b.checkOutDate}
                   </td>
-                  <td style={{ padding: '16px', fontWeight: 700, color: '#6ee7b7' }}>${b.totalPrice}</td>
+                  <td style={{ padding: '16px', fontWeight: 700, color: 'var(--success)' }}>${b.totalPrice}</td>
                   <td style={{ padding: '16px' }}>
                     <span className={`badge ${b.status === 'CONFIRMED' ? 'badge-success' : 'badge-danger'}`}>
                       {b.status}
@@ -308,8 +308,8 @@ export const AdminDashboard = () => {
         <div className="modal-overlay" onClick={() => setIsAddHotelOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '1.4rem', color: '#fff', fontWeight: 700 }}>Add New Hotel Property</h2>
-              <button onClick={() => setIsAddHotelOpen(false)} style={{ background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer' }}>
+              <h2 style={{ fontSize: '1.4rem', color: 'var(--text-heading)', fontWeight: 700 }}>Add New Hotel Property</h2>
+              <button onClick={() => setIsAddHotelOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -403,10 +403,10 @@ export const AdminDashboard = () => {
         <div className="modal-overlay" onClick={() => setIsAddRoomOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '1.4rem', color: '#fff', fontWeight: 700 }}>
+              <h2 style={{ fontSize: '1.4rem', color: 'var(--text-heading)', fontWeight: 700 }}>
                 Add Room for {selectedHotelForRoom?.name}
               </h2>
-              <button onClick={() => setIsAddRoomOpen(false)} style={{ background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer' }}>
+              <button onClick={() => setIsAddRoomOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>

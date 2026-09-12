@@ -78,7 +78,7 @@ export const Login = () => {
             width: '52px',
             height: '52px',
             borderRadius: '14px',
-            background: 'linear-gradient(135deg, #6366f1, #ec4899)',
+            background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -87,7 +87,7 @@ export const Login = () => {
           }}>
             <Hotel size={28} color="#fff" />
           </div>
-          <h1 className="heading-serif" style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '6px' }}>
+          <h1 className="heading-serif" style={{ fontSize: '1.8rem', color: 'var(--text-heading)', marginBottom: '6px' }}>
             Welcome Back
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
@@ -97,7 +97,7 @@ export const Login = () => {
 
         {/* Demo Quick Fill Buttons */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.03)',
+          background: 'var(--bg-glass)',
           border: '1px solid var(--border-glass)',
           borderRadius: 'var(--radius-sm)',
           padding: '12px',
@@ -164,7 +164,7 @@ export const Login = () => {
 
         <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
           Don't have an account yet?{' '}
-          <Link to="/register" style={{ color: '#818cf8', fontWeight: 600 }}>
+          <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>
             Create Account
           </Link>
         </div>

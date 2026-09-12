@@ -41,14 +41,14 @@ export const HotelCard = ({ hotel }) => {
           position: 'absolute',
           top: '12px',
           right: '12px',
-          background: 'rgba(11, 15, 25, 0.8)',
+          background: 'rgba(11, 15, 25, 0.75)',
           backdropFilter: 'blur(8px)',
           padding: '4px 10px',
           borderRadius: 'var(--radius-full)',
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
-          border: '1px solid var(--border-glass)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           fontWeight: 700,
           fontSize: '0.85rem',
           color: '#fcd34d'
@@ -78,7 +78,7 @@ export const HotelCard = ({ hotel }) => {
 
       {/* Hotel Content */}
       <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '8px' }}>
           {hotel.name}
         </h3>
         <p style={{
@@ -100,7 +100,8 @@ export const HotelCard = ({ hotel }) => {
             <span key={idx} style={{
               fontSize: '0.75rem',
               padding: '3px 8px',
-              background: 'rgba(255, 255, 255, 0.05)',
+              background: 'var(--bg-glass)',
+              border: '1px solid var(--border-glass)',
               borderRadius: '4px',
               color: 'var(--text-secondary)'
             }}>
@@ -108,7 +109,7 @@ export const HotelCard = ({ hotel }) => {
             </span>
           ))}
           {amenitiesList.length > 3 && (
-            <span style={{ fontSize: '0.75rem', padding: '3px 8px', color: '#818cf8' }}>
+            <span style={{ fontSize: '0.75rem', padding: '3px 8px', color: 'var(--primary)', fontWeight: 600 }}>
               +{amenitiesList.length - 3} more
             </span>
           )}
@@ -126,7 +127,7 @@ export const HotelCard = ({ hotel }) => {
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block' }}>Starting from</span>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>
                 ${hotel.minPrice || hotel.startingPrice || 160}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/ night</span>
