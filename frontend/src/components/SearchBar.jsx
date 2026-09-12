@@ -1,0 +1,115 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, Calendar, Users } from 'lucide-react';
+
+export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckOut = '', initialGuests = 2 }) => {
+  const navigate = useNavigate();
+  
+  // Default dates: tomorrow and 3 days later
+  const getDefaultDate = (offsetDays) => {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    return d.toISOString().split('T')[0];
+  };
+
+  const [city, setCity] = useState(initialCity);
+  const [checkIn, setCheckIn] = useState(initialCheckIn || getDefaultDate(1));
+  const [checkOut, setCheckOut] = useState(initialCheckOut || getDefaultDate(4));
+  const [guests, setGuests] = useState(initialGuests);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (city.trim()) params.append('city', city.trim());
+    if (checkIn) params.append('checkIn', checkIn);
+    if (checkOut) params.append('checkOut', checkOut);
+    if (guests) params.append('guests', guests);
+
+    navigate(`/hotels?${params.toString()}`);
+  };
+
+  return (
+    <form onSubmit={handleSearch} className="glass-panel" style={{
+      padding: '20px',
+      borderRadius: 'var(--radius-lg)',
+      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), var(--shadow-glow)',
+      background: 'rgba(17, 24, 39, 0.92)'
+    }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr)) 120px',
+        gap: '16px',
+        alignItems: 'center'
+      }}>
+        {/* Destination / City */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
+            <MapPin size={14} color="#818cf8" /> Destination / City
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. New York, Miami, Paris..."
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="form-input"
+            style={{ padding: '10px 14px' }}
+          />
+        </div>
+
+        {/* Check-in Date */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
+            <Calendar size={14} color="#818cf8" /> Check-In
+          </label>
+          <input
+            type="date"
+            value={checkIn}
+            onChange={(e) => setCheckIn(e.target.value)}
+            className="form-input"
+            style={{ padding: '10px 14px' }}
+          />
+        </div>
+
+        {/* Check-out Date */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
+            <Calendar size={14} color="#818cf8" /> Check-Out
+          </label>
+          <input
+            type="date"
+            value={checkOut}
+            onChange={(e) => setCheckOut(e.target.value)}
+            className="form-input"
+            style={{ padding: '10px 14px' }}
+          />
+        </div>
+
+        {/* Guests */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
+            <Users size={14} color="#818cf8" /> Guests
+          </label>
+          <select
+            value={guests}
+            onChange={(e) => setGuests(Number(e.target.value))}
+            className="form-select"
+            style={{ padding: '10px 14px' }}
+          >
+            <option value={1}>1 Guest</option>
+            <option value={2}>2 Guests</option>
+            <option value={3}>3 Guests</option>
+            <option value={4}>4 Guests</option>
+            <option value={6}>6+ Guests (Family)</option>
+          </select>
+        </div>
+
+        {/* Search Submit CTA */}
+        <div style={{ alignSelf: 'flex-end' }}>
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '46px' }}>
+            <Search size={18} /> Search
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+};

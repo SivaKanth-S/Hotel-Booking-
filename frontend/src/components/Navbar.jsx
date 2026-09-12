@@ -1,0 +1,138 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Hotel, User, LogOut, Shield, Calendar, Search, Menu, X } from 'lucide-react';
+
+export const Navbar = () => {
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <nav style={{
+      background: 'rgba(11, 15, 25, 0.85)',
+      backdropFilter: 'blur(20px)',
+      borderBottom: '1px solid var(--border-glass)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100
+    }}>
+      <div className="container" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '76px'
+      }}>
+        {/* Brand Logo */}
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 16px rgba(99, 102, 241, 0.4)'
+          }}>
+            <Hotel size={24} color="#ffffff" />
+          </div>
+          <div>
+            <span style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#fff' }}>
+              GRAND<span style={{ color: '#818cf8' }}>STAY</span>
+            </span>
+            <span style={{ display: 'block', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+              Luxury Hotels & Resorts
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Navigation Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }} className="desktop-nav">
+          <Link to="/" style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s' }}
+            onMouseEnter={(e) => e.target.style.color = '#fff'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}>
+            Home
+          </Link>
+          <Link to="/hotels" style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}
+            onMouseEnter={(e) => e.target.style.color = '#fff'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}>
+            <Search size={16} /> Explore Hotels
+          </Link>
+
+          {isAuthenticated && (
+            <Link to="/my-bookings" style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}
+              onMouseEnter={(e) => e.target.style.color = '#fff'}
+              onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}>
+              <Calendar size={16} /> My Bookings
+            </Link>
+          )}
+
+          {isAdmin && (
+            <Link to="/admin" style={{
+              background: 'rgba(99, 102, 241, 0.15)',
+              color: '#a5b4fc',
+              border: '1px solid rgba(99, 102, 241, 0.3)',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <Shield size={15} /> Admin Portal
+            </Link>
+          )}
+
+          {/* User Auth Buttons */}
+          {isAuthenticated ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginLeft: '12px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 12px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '8px',
+                border: '1px solid var(--border-glass)'
+              }}>
+                <div style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.85rem',
+                  fontWeight: 700
+                }}>
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.name || 'Guest'}</span>
+              </div>
+              <button onClick={handleLogout} className="btn btn-secondary btn-sm" title="Log Out">
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '12px' }}>
+              <Link to="/login" className="btn btn-secondary btn-sm">
+                Sign In
+              </Link>
+              <Link to="/register" className="btn btn-primary btn-sm">
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+};
