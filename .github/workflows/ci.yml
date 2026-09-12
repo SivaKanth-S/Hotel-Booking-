@@ -10,6 +10,17 @@ jobs:
   backend-build-test:
     name: Backend Build & Unit Tests
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: hotel_booking
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,6 +34,10 @@ jobs:
 
       - name: Build and Test Backend
         working-directory: ./backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/hotel_booking?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: rootpassword
         run: mvn clean test
 
   frontend-build-test:

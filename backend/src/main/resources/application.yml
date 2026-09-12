@@ -6,10 +6,10 @@ spring:
     name: hotel-booking-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/hotel_booking?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:hotel_booking}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: Siva143sk
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:root}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:Siva143sk}}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10

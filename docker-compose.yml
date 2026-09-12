@@ -1,21 +1,20 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database Service
-  postgres:
-    image: postgres:16-alpine
-    container_name: grandstay_postgres
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: grandstay_mysql
     restart: unless-stopped
     environment:
-      POSTGRES_DB: hotelbookingdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
+      MYSQL_ROOT_PASSWORD: Siva143sk
+      MYSQL_DATABASE: hotel_booking
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysqldata:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d hotelbookingdb"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -28,13 +27,12 @@ services:
     container_name: grandstay_backend
     restart: unless-stopped
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/hotelbookingdb
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgrespassword
-      SPRING_DATASOURCE_DRIVER: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hotel_booking?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Siva143sk
       JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       JWT_EXPIRATION_MS: 86400000
     ports:
@@ -53,5 +51,5 @@ services:
       - "3000:80"
 
 volumes:
-  pgdata:
+  mysqldata:
     driver: local
