@@ -6,157 +6,156 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.List;
 
+/**
+ * Seeds initial sample data into MySQL on first startup.
+ * Runs only when tables are empty to avoid duplicate entries.
+ */
 @Component
 public class DataInitializer implements CommandLineRunner {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private HotelRepository hotelRepository;
-
-    @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
-    private PromotionRepository promotionRepository;
-
-    @Autowired
-    private BookingRepository bookingRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Autowired private HotelRepository hotelRepository;
+    @Autowired private RoomRepository roomRepository;
+    @Autowired private RoomAvailabilityRepository roomAvailabilityRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private PromotionRepository promotionRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
-        if (userRepository.count() > 0) {
-            return; // Data already seeded
+    @Transactional
+    public void run(String... args) {
+        if (hotelRepository.count() > 0) {
+            System.out.println("[DataInitializer] MySQL already has data — skipping seed.");
+            return;
+        }
+        System.out.println("[DataInitializer] Seeding MySQL database...");
+
+        // ── Users ─────────────────────────────────────────────
+        User admin = new User("Admin User", "admin@hotel.com",
+                passwordEncoder.encode("Admin@123"), Role.ADMIN);
+        User customer1 = new User("Alice Smith", "alice@example.com",
+                passwordEncoder.encode("Alice@123"), Role.CUSTOMER);
+        User customer2 = new User("Bob Johnson", "bob@example.com",
+                passwordEncoder.encode("Bob@123"), Role.CUSTOMER);
+        userRepository.saveAll(List.of(admin, customer1, customer2));
+
+        // ── Hotels ────────────────────────────────────────────
+        Hotel h1 = new Hotel(
+                "The Grand Palace",
+                "A luxurious 5-star hotel in the heart of Chennai with world-class amenities and breathtaking sea views.",
+                "12 Marina Beach Road, Chennai",
+                "Chennai", "India", 5.0,
+                "Swimming Pool,Spa,Gym,Free WiFi,Restaurant,Bar,Concierge,Valet Parking",
+                "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
+        );
+        Hotel h2 = new Hotel(
+                "Seaside Comfort Inn",
+                "A comfortable 4-star hotel offering modern rooms, an outdoor pool, and easy access to the beach.",
+                "45 ECR Coast Road, Chennai",
+                "Chennai", "India", 4.0,
+                "Swimming Pool,Free WiFi,Restaurant,Room Service,Parking",
+                "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800"
+        );
+        Hotel h3 = new Hotel(
+                "Heritage Haveli",
+                "A charming heritage property blending traditional Rajasthani architecture with contemporary luxury.",
+                "7 Johari Bazaar, Jaipur",
+                "Jaipur", "India", 4.5,
+                "Rooftop Restaurant,Cultural Shows,Spa,Free WiFi,Ayurvedic Treatments",
+                "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800"
+        );
+        Hotel h4 = new Hotel(
+                "Mumbai Skyline Suites",
+                "Premium business suites in the BKC financial district with panoramic city skyline views.",
+                "Plot C-54, Bandra Kurla Complex, Mumbai",
+                "Mumbai", "India", 4.5,
+                "Business Center,Gym,Rooftop Pool,Free WiFi,Restaurant,Airport Shuttle",
+                "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800"
+        );
+        Hotel h5 = new Hotel(
+                "Backwater Bliss Resort",
+                "Serene eco-resort on the Kerala backwaters with private villa chalets and Ayurvedic spa.",
+                "NH-66 Vembanad Lake Road, Alleppey",
+                "Alleppey", "India", 5.0,
+                "Private Pool,Ayurvedic Spa,Boat Rides,Free WiFi,Yoga,Organic Restaurant",
+                "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800"
+        );
+        hotelRepository.saveAll(List.of(h1, h2, h3, h4, h5));
+
+        // ── Rooms ──────────────────────────────────────────────
+        // Hotel 1 rooms
+        Room r1 = new Room(h1, "Standard", 5500.0, 2,
+                "King Bed,AC,Free WiFi,Mini Bar,TV,Safe", 10,
+                "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800");
+        Room r2 = new Room(h1, "Deluxe Sea View", 8500.0, 2,
+                "King Bed,Sea View,AC,Free WiFi,Mini Bar,Jacuzzi,TV", 8,
+                "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800");
+        Room r3 = new Room(h1, "Presidential Suite", 25000.0, 4,
+                "Living Room,2 Bedrooms,Butler Service,Jacuzzi,Sea View,Bar,Kitchen", 2,
+                "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800");
+
+        // Hotel 2 rooms
+        Room r4 = new Room(h2, "Standard", 3200.0, 2,
+                "Double Bed,AC,Free WiFi,TV,Shower", 15,
+                "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800");
+        Room r5 = new Room(h2, "Deluxe", 4800.0, 3,
+                "Queen Bed,AC,Free WiFi,Mini Bar,Balcony,TV", 10,
+                "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800");
+
+        // Hotel 3 rooms
+        Room r6 = new Room(h3, "Heritage Room", 6000.0, 2,
+                "Traditional Decor,AC,Free WiFi,Courtyard View,TV", 12,
+                "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800");
+        Room r7 = new Room(h3, "Royal Suite", 15000.0, 4,
+                "Rajasthani Decor,Private Terrace,Butler,AC,Free WiFi,Bathtub", 4,
+                "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800");
+
+        // Hotel 4 rooms
+        Room r8 = new Room(h4, "Business Suite", 9500.0, 2,
+                "Work Desk,High-Speed WiFi,Skyline View,AC,Mini Bar,TV,Safe", 20,
+                "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800");
+        Room r9 = new Room(h4, "Executive Suite", 18000.0, 3,
+                "Separate Living Area,Pantry,Skyline View,AC,Free WiFi,Jacuzzi", 6,
+                "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800");
+
+        // Hotel 5 rooms
+        Room r10 = new Room(h5, "Lake Villa", 12000.0, 2,
+                "Private Pool,Backwater View,Butler,AC,Free WiFi,Outdoor Deck", 8,
+                "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800");
+        Room r11 = new Room(h5, "Luxury Chalet", 20000.0, 4,
+                "2 Bedrooms,Private Jetty,Pool,Ayurvedic Spa Access,Free WiFi", 4,
+                "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800");
+
+        roomRepository.saveAll(List.of(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11));
+
+        // ── Room Availability (next 90 days) ──────────────────
+        LocalDate today = LocalDate.now();
+        List<Room> allRooms = List.of(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11);
+        for (Room room : allRooms) {
+            for (int i = 0; i < 90; i++) {
+                LocalDate date = today.plusDays(i);
+                RoomAvailability avail = new RoomAvailability(room, date, room.getTotalUnits());
+                roomAvailabilityRepository.save(avail);
+            }
         }
 
-        // 1. Seed Users
-        User admin = new User(
-                "GrandStay Administrator",
-                "admin@hotelbooking.com",
-                passwordEncoder.encode("Admin@123"),
-                Role.ADMIN
-        );
-        userRepository.save(admin);
+        // ── Promotions ────────────────────────────────────────
+        Promotion p1 = new Promotion("WELCOME10", DiscountType.PERCENTAGE, 10.0,
+                today, today.plusMonths(6), true);
+        Promotion p2 = new Promotion("SUMMER20", DiscountType.PERCENTAGE, 20.0,
+                today, today.plusMonths(3), true);
+        Promotion p3 = new Promotion("FLAT500", DiscountType.FLAT, 500.0,
+                today, today.plusMonths(2), true);
+        promotionRepository.saveAll(List.of(p1, p2, p3));
 
-        User customer = new User(
-                "Demo Traveler",
-                "customer@example.com",
-                passwordEncoder.encode("Customer@123"),
-                Role.CUSTOMER
-        );
-        User savedCustomer = userRepository.save(customer);
-
-        // 2. Seed Promotions
-        Promotion promo1 = new Promotion("WELCOME10", DiscountType.PERCENTAGE, 10.0, LocalDate.now().minusMonths(1), LocalDate.now().plusYears(1), true);
-        Promotion promo2 = new Promotion("SUMMER25", DiscountType.PERCENTAGE, 25.0, LocalDate.now().minusMonths(1), LocalDate.now().plusYears(1), true);
-        Promotion promo3 = new Promotion("LUXURY50", DiscountType.FLAT, 50.0, LocalDate.now().minusMonths(1), LocalDate.now().plusYears(1), true);
-        promotionRepository.saveAll(Arrays.asList(promo1, promo2, promo3));
-
-        // 3. Seed Tamil Nadu Hotels & Rooms
-        // Hotel 1 - Chennai
-        Hotel hotel1 = new Hotel(
-                "The Grand Chola Palace",
-                "A majestic 5-star retreat in the heart of Chennai blending Chola dynasty architecture with ultra-modern luxury, offering panoramic Marina Beach views and award-winning dining.",
-                "100 Anna Salai, Guindy & Teynampet",
-                "Chennai",
-                "Tamil Nadu, India",
-                4.9,
-                "WiFi, Swimming Pool, Ayurvedic Spa, Fitness Center, Restaurant, Valet Parking, Concierge",
-                "https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&w=1200&q=85,https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=85,https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=85"
-        );
-        Hotel savedH1 = hotelRepository.save(hotel1);
-
-        Room h1r1 = new Room(savedH1, "Chola Deluxe Room", 8500.0, 2, "1 King Bed, City View, Smart 4K TV, Rain Shower, Espresso Maker", 10, "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80");
-        Room h1r2 = new Room(savedH1, "Marina Panoramic Suite", 12500.0, 3, "1 King Bed + Daybed, Marina Beach Horizon View, Deep Soaking Marble Tub, Lounge Access", 8, "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80");
-        Room h1r3 = new Room(savedH1, "Imperial Dynasty Royal Suite", 18500.0, 4, "2 King Master Bedrooms, Rooftop Jacuzzi, Dedicated Butler Service, Private Dining", 3, "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80");
-        roomRepository.saveAll(Arrays.asList(h1r1, h1r2, h1r3));
-
-        // Hotel 2 - Coimbatore
-        Hotel hotel2 = new Hotel(
-                "Kovai Nilgiris Resort & Spa",
-                "Nestled at the scenic gateway of the Nilgiri hills in Coimbatore, offering Western Ghats valley views, organic spice plantation trails, and authentic Kongu cuisine.",
-                "32 Avinashi Road, Peelamedu",
-                "Coimbatore",
-                "Tamil Nadu, India",
-                4.8,
-                "WiFi, Infinity Pool, Ayurveda Centre, Organic Restaurant, Mountain View, Spice Garden Walk",
-                "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1200&q=85,https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=85"
-        );
-        Hotel savedH2 = hotelRepository.save(hotel2);
-
-        Room h2r1 = new Room(savedH2, "Kongu Valley Deluxe Room", 6200.0, 2, "1 King Bed, Western Ghats View, Smart TV, Herbal Spa Toiletries, Balcony", 12, "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80");
-        Room h2r2 = new Room(savedH2, "Nilgiri Foothills Cottage", 9800.0, 4, "Private Garden Villa, Outdoor Rain Shower, Organic Breakfast Included, Fireplace", 5, "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=800&q=80");
-        roomRepository.saveAll(Arrays.asList(h2r1, h2r2));
-
-        // Hotel 3 - Madurai
-        Hotel hotel3 = new Hotel(
-                "Meenakshi Heritage Grand",
-                "Located mere steps from the legendary Meenakshi Amman Temple in Madurai, offering temple-view suites, carved courtyards, and authentic Chettinad royal thali banquets.",
-                "15 West Perumal Maistry Street",
-                "Madurai",
-                "Tamil Nadu, India",
-                5.0,
-                "WiFi, Temple View Rooms, Chettinad Restaurant, Cultural Tours, Ayurvedic Spa, Temple Shuttle",
-                "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?auto=format&fit=crop&w=1200&q=85,https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=85"
-        );
-        Hotel savedH3 = hotelRepository.save(hotel3);
-
-        Room h3r1 = new Room(savedH3, "Temple View Heritage Room", 7000.0, 2, "Gopuram View Window, Rosewood Furnishings, Dravidian Brass Decor, Free Breakfast", 8, "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=80");
-        Room h3r2 = new Room(savedH3, "Pandyan Royal Suite", 11500.0, 3, "Private Temple View Balcony, Chettinad Thali Included, Separate Living Room, Marble Bath", 4, "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?auto=format&fit=crop&w=800&q=80");
-        roomRepository.saveAll(Arrays.asList(h3r1, h3r2));
-
-        // Hotel 4 - Nilgiris (Ooty)
-        Hotel hotel4 = new Hotel(
-                "Ooty Fern Hill Palace",
-                "A restored colonial-era palace in the misty Nilgiris surrounded by eucalyptus groves and rolling emerald tea gardens, featuring crackling fireplaces.",
-                "Fern Hill Road, Ooty",
-                "Nilgiris (Ooty)",
-                "Tamil Nadu, India",
-                4.9,
-                "WiFi, Fireplace Suites, Tea Garden Walk, Heritage Dining, Horseback Riding, Heated Rooms",
-                "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=85,https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1200&q=85"
-        );
-        Hotel savedH4 = hotelRepository.save(hotel4);
-        Room h4r1 = new Room(savedH4, "Victorian Fireplace Suite", 9500.0, 2, "Working Fireplace, Nilgiri Tea Garden View, Antique Teak Bed, High Tea Service", 6, "https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=800&q=80");
-        roomRepository.save(h4r1);
-
-        // Hotel 5 - Thanjavur
-        Hotel hotel5 = new Hotel(
-                "Thanjavur Brihadeeswara Retreat",
-                "A culturally rich sanctuary adjacent to the UNESCO World Heritage Brihadeeswara Temple, offering Bharatanatyam recitals and Kaveri delta tranquility.",
-                "4 Nayak Road",
-                "Thanjavur",
-                "Tamil Nadu, India",
-                4.7,
-                "WiFi, Cultural Performances, Heritage Pool, Temple Tours, Art Workshops, Ayurvedic Massage",
-                "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=85,https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=85"
-        );
-        Hotel savedH5 = hotelRepository.save(hotel5);
-        Room h5r1 = new Room(savedH5, "Chola Craft Deluxe Room", 5500.0, 2, "Thanjavur Painting Art Decor, Courtyard View, Free Breakfast, Rain Shower", 7, "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80");
-        roomRepository.save(h5r1);
-
-        // 4. Seed a sample confirmed booking for the customer
-        Booking initialBooking = new Booking(
-                "RES-202610-TN8K21",
-                savedCustomer,
-                h1r2,
-                LocalDate.now().plusDays(10),
-                LocalDate.now().plusDays(13),
-                2,
-                33750.0, // 3 nights @ 12500 minus 10% promo
-                BookingStatus.CONFIRMED,
-                promo1
-        );
-        bookingRepository.save(initialBooking);
-
-        System.out.println(">>> GrandStay Database Seeded Successfully with Tamil Nadu Hotels, Suites, Districts & Promotions <<<");
+        System.out.println("[DataInitializer] MySQL seeding complete!");
+        System.out.println("  → Hotels  : " + hotelRepository.count());
+        System.out.println("  → Rooms   : " + roomRepository.count());
+        System.out.println("  → Users   : " + userRepository.count());
+        System.out.println("  → Promos  : " + promotionRepository.count());
     }
 }

@@ -4,6 +4,7 @@ import com.hotelbooking.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -86,6 +85,19 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ErrorResponse> handleMailException(MailException ex, HttpServletRequest request) {
+        // Email delivery failure — the core operation succeeded; inform the client
+        // that the notification could not be sent without rolling back the action.
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.OK.value(),
+                "Email Notification Failed",
+                "Your request was processed successfully, but we could not send the notification email. Please check your inbox later.",
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)

@@ -43,9 +43,15 @@ public class BookingService {
     @Autowired
     private PromotionRepository promotionRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     private static final String ALPHANUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    // -----------------------------------------------------------------------
+    // CREATE BOOKING
+    // -----------------------------------------------------------------------
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingResponse createBooking(Long userId, BookingRequest request) {
         User user = userRepository.findById(userId)
@@ -54,14 +60,13 @@ public class BookingService {
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + request.getRoomId()));
 
+        // --- Input validation ---
         if (request.getCheckInDate() == null || request.getCheckOutDate() == null) {
             throw new BadRequestException("Check-in and check-out dates are required");
         }
-
         if (!request.getCheckOutDate().isAfter(request.getCheckInDate())) {
             throw new BadRequestException("Check-out date must be after check-in date");
         }
-
         if (request.getNumGuests() > room.getCapacity()) {
             throw new BadRequestException("Guest count exceeds maximum room capacity of " + room.getCapacity());
         }
@@ -71,10 +76,12 @@ public class BookingService {
             throw new BadRequestException("Booking duration must be at least 1 night");
         }
 
-        // 1. Atomic Availability Check & Decrement
+        // --- Atomic availability check & decrement (one row per date, pessimistic lock) ---
         LocalDate curr = request.getCheckInDate();
         while (curr.isBefore(request.getCheckOutDate())) {
-            Optional<RoomAvailability> availOpt = roomAvailabilityRepository.findByRoomIdAndDateWithLock(room.getId(), curr);
+            Optional<RoomAvailability> availOpt =
+                    roomAvailabilityRepository.findByRoomIdAndDateWithLock(room.getId(), curr);
+
             RoomAvailability availability;
             if (availOpt.isPresent()) {
                 availability = availOpt.get();
@@ -83,7 +90,7 @@ public class BookingService {
                 }
                 availability.setUnitsAvailable(availability.getUnitsAvailable() - 1);
             } else {
-                // Initial record for date
+                // First booking ever for this date — lazy-create the record
                 if (room.getTotalUnits() <= 0) {
                     throw new ConflictException("No rooms available for date: " + curr);
                 }
@@ -93,13 +100,14 @@ public class BookingService {
             curr = curr.plusDays(1);
         }
 
-        // 2. Pricing & Promotion
+        // --- Pricing & promotion ---
         double baseTotal = room.getPricePerNight() * nights;
         double discountAmount = 0.0;
         Promotion appliedPromo = null;
 
         if (request.getPromotionCode() != null && !request.getPromotionCode().trim().isEmpty()) {
-            Optional<Promotion> promoOpt = promotionRepository.findByCodeIgnoreCase(request.getPromotionCode().trim());
+            Optional<Promotion> promoOpt =
+                    promotionRepository.findByCodeIgnoreCase(request.getPromotionCode().trim());
             if (promoOpt.isPresent() && promoOpt.get().isValidForDate(request.getCheckInDate())) {
                 appliedPromo = promoOpt.get();
                 if (appliedPromo.getDiscountType() == DiscountType.PERCENTAGE) {
@@ -110,12 +118,10 @@ public class BookingService {
             }
         }
 
-        double finalTotal = Math.max(0.0, baseTotal - discountAmount);
+        double finalTotal = Math.round(Math.max(0.0, baseTotal - discountAmount) * 100.0) / 100.0;
 
-        // 3. Generate Unique Reservation Code
+        // --- Persist booking ---
         String resCode = generateReservationCode();
-
-        // 4. Create and Save Booking
         Booking booking = new Booking(
                 resCode,
                 user,
@@ -123,15 +129,23 @@ public class BookingService {
                 request.getCheckInDate(),
                 request.getCheckOutDate(),
                 request.getNumGuests(),
-                Math.round(finalTotal * 100.0) / 100.0,
+                finalTotal,
                 BookingStatus.CONFIRMED,
                 appliedPromo
         );
 
         Booking saved = bookingRepository.save(booking);
-        return mapToResponse(saved, discountAmount);
+        BookingResponse response = mapToResponse(saved, discountAmount);
+
+        // --- Send booking confirmation email asynchronously ---
+        emailService.sendBookingConfirmationEmail(user.getEmail(), user.getName(), response);
+
+        return response;
     }
 
+    // -----------------------------------------------------------------------
+    // GET MY BOOKINGS
+    // -----------------------------------------------------------------------
     @Transactional(readOnly = true)
     public List<BookingResponse> getMyBookings(Long userId) {
         return bookingRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
@@ -139,6 +153,9 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    // -----------------------------------------------------------------------
+    // GET BOOKING BY ID
+    // -----------------------------------------------------------------------
     @Transactional(readOnly = true)
     public BookingResponse getBookingById(Long id, Long currentUserId, boolean isAdmin) {
         Booking booking = bookingRepository.findById(id)
@@ -151,6 +168,13 @@ public class BookingService {
         return mapToResponse(booking, 0.0);
     }
 
+    // -----------------------------------------------------------------------
+    // CANCEL BOOKING
+    // Bug fix: when a date has no RoomAvailability record yet (edge-case where
+    // the record was never written), we now create one that restores back to
+    // totalUnits instead of silently skipping, ensuring availability is
+    // always correctly restored regardless of data state.
+    // -----------------------------------------------------------------------
     @Transactional
     public BookingResponse cancelBooking(Long id, Long currentUserId, boolean isAdmin) {
         Booking booking = bookingRepository.findById(id)
@@ -166,22 +190,40 @@ public class BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
 
-        // Restore room availability for the date range
+        // --- Restore room availability for the full date range ---
+        Room room = booking.getRoom();
         LocalDate curr = booking.getCheckInDate();
         while (curr.isBefore(booking.getCheckOutDate())) {
-            Optional<RoomAvailability> availOpt = roomAvailabilityRepository.findByRoomIdAndDateWithLock(booking.getRoom().getId(), curr);
+            Optional<RoomAvailability> availOpt =
+                    roomAvailabilityRepository.findByRoomIdAndDateWithLock(room.getId(), curr);
+
             if (availOpt.isPresent()) {
+                // Record exists — simply increment, capped at total units
                 RoomAvailability avail = availOpt.get();
-                avail.setUnitsAvailable(Math.min(booking.getRoom().getTotalUnits(), avail.getUnitsAvailable() + 1));
+                avail.setUnitsAvailable(Math.min(room.getTotalUnits(), avail.getUnitsAvailable() + 1));
+                roomAvailabilityRepository.save(avail);
+            } else {
+                // FIX: No record exists for this date (data gap). Create one that
+                // reflects full availability so future bookings can use the slot.
+                RoomAvailability avail = new RoomAvailability(room, curr, room.getTotalUnits());
                 roomAvailabilityRepository.save(avail);
             }
             curr = curr.plusDays(1);
         }
 
         Booking updated = bookingRepository.save(booking);
-        return mapToResponse(updated, 0.0);
+        BookingResponse response = mapToResponse(updated, 0.0);
+
+        // --- Send cancellation email asynchronously ---
+        User user = booking.getUser();
+        emailService.sendBookingCancellationEmail(user.getEmail(), user.getName(), response);
+
+        return response;
     }
 
+    // -----------------------------------------------------------------------
+    // GET ALL BOOKINGS (admin)
+    // -----------------------------------------------------------------------
     @Transactional(readOnly = true)
     public List<BookingResponse> getAllBookingsAdmin() {
         return bookingRepository.findAllByOrderByCreatedAtDesc().stream()
@@ -189,6 +231,9 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    // -----------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------
     private String generateReservationCode() {
         String yearMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
         StringBuilder sb = new StringBuilder("RES-").append(yearMonth).append("-");

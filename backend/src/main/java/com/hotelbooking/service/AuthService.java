@@ -32,6 +32,9 @@ public class AuthService {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private EmailService emailService;
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -53,6 +56,9 @@ public class AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
+
+        // Send welcome email asynchronously — fires in background, never blocks the response
+        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
 
         return new AuthResponse(jwt, savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getRole());
     }

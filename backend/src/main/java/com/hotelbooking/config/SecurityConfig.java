@@ -61,8 +61,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/promotions/**").permitAll()
                 
-                // Swagger & API Docs & H2 Console
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/h2-console/**").permitAll()
+                // Swagger & API Docs
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 
                 // Admin Inventory Endpoints
                 .requestMatchers(HttpMethod.POST, "/api/hotels/**").hasRole("ADMIN")
@@ -79,7 +79,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             );
 
-        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

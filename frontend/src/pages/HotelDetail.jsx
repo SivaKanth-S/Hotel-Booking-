@@ -36,31 +36,10 @@ export const HotelDetail = () => {
         const roomsData = await roomService.getRoomsByHotel(id);
         setRooms(roomsData);
       } catch (err) {
-        // Fallback to Tamil Nadu hotel from centralized data
+        // Last-resort fallback if even local data lookup fails
         const found = TN_HOTELS.find(h => String(h.id) === String(id)) || TN_HOTELS[0];
         setHotel(found);
-        setRooms(found.rooms || [
-          {
-            id: found.id * 10 + 1,
-            hotelId: found.id,
-            category: "Heritage Deluxe Suite",
-            pricePerNight: found.minPrice || 5500,
-            capacity: 2,
-            totalUnits: 10,
-            amenities: ["1 King Bed", "District / Garden View", "Smart 4K TV", "Rain Shower", "Free High-Speed WiFi", "South Indian Coffee Bar"],
-            images: [found.images[1] || found.images[0]]
-          },
-          {
-            id: found.id * 10 + 2,
-            hotelId: found.id,
-            category: "Royal Presidential Suite",
-            pricePerNight: Math.round((found.minPrice || 5500) * 1.6),
-            capacity: 4,
-            totalUnits: 4,
-            amenities: ["2 King Master Bedrooms", "Panoramic Terrace", "Dedicated Butler Service", "Ayurvedic Spa Access", "Traditional Thali Breakfast"],
-            images: [found.images[2] || found.images[0]]
-          }
-        ]);
+        setRooms(found?.rooms || []);
       } finally {
         setLoading(false);
       }

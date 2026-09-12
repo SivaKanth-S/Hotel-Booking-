@@ -7,6 +7,7 @@ import { roomService } from '../services/roomService';
 import { bookingService } from '../services/bookingService';
 import { Shield, Plus, Building2, Bed, CalendarCheck, DollarSign, X, Check, Trash2, Edit } from 'lucide-react';
 import { TN_DISTRICTS, TN_HOTELS } from '../data/tnData';
+import { handleImageError, DEFAULT_HOTEL_IMAGE, DEFAULT_ROOM_IMAGE } from '../utils/imageUtils';
 
 export const AdminDashboard = () => {
   const { isAdmin, isAuthenticated } = useAuth();
@@ -62,7 +63,8 @@ export const AdminDashboard = () => {
         city: h.city,
         country: h.country,
         starRating: h.starRating,
-        minPrice: h.minPrice
+        minPrice: h.minPrice,
+        images: h.images
       })));
       setBookings([
         { id: 101, reservationNumber: "RES-202609-TN8K21", hotelName: "The Grand Chola Palace", roomCategory: "Chola Heritage Suite", checkInDate: "2026-10-15", checkOutDate: "2026-10-18", totalPrice: 25500, status: "CONFIRMED" }
@@ -239,13 +241,21 @@ export const AdminDashboard = () => {
                 gap: '16px'
               }}
             >
-              <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '4px' }}>
-                  {hotel.name}
-                </h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  {hotel.city}, {hotel.country} &bull; Rating: {hotel.starRating}★ &bull; Base Price: ₹{(hotel.minPrice || 5000).toLocaleString('en-IN')}/night
-                </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <img
+                  src={Array.isArray(hotel.images) ? hotel.images[0] : (typeof hotel.images === 'string' ? hotel.images.split(',')[0] : DEFAULT_HOTEL_IMAGE)}
+                  alt={hotel.name}
+                  style={{ width: '64px', height: '64px', borderRadius: 'var(--radius-sm)', objectFit: 'cover' }}
+                  onError={(e) => handleImageError(e, DEFAULT_HOTEL_IMAGE)}
+                />
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '4px' }}>
+                    {hotel.name}
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    {hotel.city}, {hotel.country} &bull; Rating: {hotel.starRating}★ &bull; Base Price: ₹{(hotel.minPrice || 5000).toLocaleString('en-IN')}/night
+                  </p>
+                </div>
               </div>
 
               <div style={{ display: 'flex', gap: '10px' }}>
@@ -399,6 +409,16 @@ export const AdminDashboard = () => {
                   className="form-input"
                 />
               </div>
+              <div className="form-group">
+                <label className="form-label">Hotel Image URL</label>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={hotelForm.images}
+                  onChange={(e) => setHotelForm({ ...hotelForm, images: e.target.value })}
+                  className="form-input"
+                />
+              </div>
               <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '10px' }}>
                 Save & Publish Hotel
               </button>
@@ -433,7 +453,7 @@ export const AdminDashboard = () => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                 <div className="form-group">
-                  <label className="form-label">Price / Night ($)</label>
+                  <label className="form-label">Price / Night (₹)</label>
                   <input
                     type="number"
                     required
@@ -473,6 +493,16 @@ export const AdminDashboard = () => {
                   type="text"
                   value={roomForm.amenities}
                   onChange={(e) => setRoomForm({ ...roomForm, amenities: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Room Image URL</label>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={roomForm.images}
+                  onChange={(e) => setRoomForm({ ...roomForm, images: e.target.value })}
                   className="form-input"
                 />
               </div>

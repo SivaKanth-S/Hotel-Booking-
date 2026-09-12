@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { SearchBar } from '../components/SearchBar';
+
 import { HotelCard } from '../components/HotelCard';
 import { hotelService } from '../services/hotelService';
 import { TN_HOTELS, TN_DESTINATIONS } from '../data/tnData';
@@ -77,10 +77,7 @@ export const Home = () => {
             🏛️ Heritage Palaces &nbsp;|&nbsp; 🌿 Hill Resorts &nbsp;|&nbsp; 🌊 Coastal Retreats &nbsp;|&nbsp; 🕌 Temple-Side Stays
           </p>
 
-          {/* Hero Search Bar Component */}
-          <div style={{ maxWidth: '980px', margin: '0 auto' }}>
-            <SearchBar />
-          </div>
+
         </div>
       </section>
 
