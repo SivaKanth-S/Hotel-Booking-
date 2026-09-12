@@ -28,9 +28,9 @@ export const AdminDashboard = () => {
     description: '',
     address: '',
     city: '',
-    country: 'USA',
+    country: 'Tamil Nadu, India',
     starRating: 4.8,
-    amenities: 'WiFi, Swimming Pool, Spa, Fitness Center, Restaurant, Valet Parking',
+    amenities: 'WiFi, Swimming Pool, Ayurvedic Spa, Fitness Centre, Restaurant, Valet Parking',
     images: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80'
   });
 
@@ -38,10 +38,10 @@ export const AdminDashboard = () => {
   const [roomForm, setRoomForm] = useState({
     hotelId: '',
     category: 'Deluxe Suite',
-    pricePerNight: 240,
+    pricePerNight: 5500,
     capacity: 2,
     totalUnits: 10,
-    amenities: 'King Bed, Ocean View, Smart TV, Mini Bar',
+    amenities: 'King Bed, Temple View, Smart TV, Mini Bar, Ayurveda Kit',
     images: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80'
   });
 
@@ -56,11 +56,13 @@ export const AdminDashboard = () => {
     } catch (err) {
       // Fallback
       setHotels([
-        { id: 1, name: "Grand Palace Hotel & Suites", city: "New York", country: "USA", starRating: 4.9, minPrice: 220 },
-        { id: 2, name: "Azure Oceanfront Resort", city: "Miami", country: "USA", starRating: 4.8, minPrice: 280 }
+        { id: 1, name: "The Grand Chola Palace", city: "Chennai", country: "Tamil Nadu, India", starRating: 4.9, minPrice: 8500 },
+        { id: 2, name: "Meenakshi Heritage Grand", city: "Madurai", country: "Tamil Nadu, India", starRating: 5.0, minPrice: 7000 },
+        { id: 3, name: "Ooty Fern Hill Palace", city: "Nilgiris (Ooty)", country: "Tamil Nadu, India", starRating: 4.9, minPrice: 9500 },
+        { id: 4, name: "Kovai Nilgiris Resort & Spa", city: "Coimbatore", country: "Tamil Nadu, India", starRating: 4.8, minPrice: 6200 }
       ]);
       setBookings([
-        { id: 101, reservationNumber: "RES-202609-9X8K21", hotelName: "Grand Palace Hotel", roomCategory: "Deluxe Suite", checkInDate: "2026-10-15", checkOutDate: "2026-10-18", totalPrice: 840, status: "CONFIRMED" }
+        { id: 101, reservationNumber: "RES-202609-TN8K21", hotelName: "The Grand Chola Palace", roomCategory: "Chola Heritage Suite", checkInDate: "2026-10-15", checkOutDate: "2026-10-18", totalPrice: 25500, status: "CONFIRMED" }
       ]);
     } finally {
       setLoading(false);
@@ -180,7 +182,7 @@ export const AdminDashboard = () => {
           </div>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Confirmed Revenue</span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--success)' }}>${totalRevenue}</h3>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--success)' }}>₹{Number(totalRevenue).toLocaleString('en-IN')}</h3>
           </div>
         </div>
       </div>
@@ -239,7 +241,7 @@ export const AdminDashboard = () => {
                   {hotel.name}
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  {hotel.city}, {hotel.country} &bull; Rating: {hotel.starRating}★ &bull; Base Price: ${hotel.minPrice || 200}/night
+                  {hotel.city}, {hotel.country} &bull; Rating: {hotel.starRating}★ &bull; Base Price: ₹{(hotel.minPrice || 5000).toLocaleString('en-IN')}/night
                 </p>
               </div>
 
@@ -290,7 +292,7 @@ export const AdminDashboard = () => {
                   <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>
                     {b.checkInDate} &rarr; {b.checkOutDate}
                   </td>
-                  <td style={{ padding: '16px', fontWeight: 700, color: 'var(--success)' }}>${b.totalPrice}</td>
+                  <td style={{ padding: '16px', fontWeight: 700, color: 'var(--success)' }}>₹{Number(b.totalPrice).toLocaleString('en-IN')}</td>
                   <td style={{ padding: '16px' }}>
                     <span className={`badge ${b.status === 'CONFIRMED' ? 'badge-success' : 'badge-danger'}`}>
                       {b.status}
@@ -327,33 +329,37 @@ export const AdminDashboard = () => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="form-group">
-                  <label className="form-label">City</label>
-                  <input
-                    type="text"
+                  <label className="form-label">Tamil Nadu District</label>
+                  <select
                     required
-                    placeholder="e.g. San Francisco"
                     value={hotelForm.city}
                     onChange={(e) => setHotelForm({ ...hotelForm, city: e.target.value })}
-                    className="form-input"
-                  />
+                    className="form-select"
+                    id="admin-district-select"
+                  >
+                    <option value="">-- Select District --</option>
+                    {['Ariyalur','Chengalpattu','Chennai','Coimbatore','Cuddalore','Dharmapuri','Dindigul','Erode','Kallakurichi','Kancheepuram','Kanyakumari','Karur','Krishnagiri','Madurai','Mayiladuthurai','Nagapattinam','Namakkal','Nilgiris (Ooty)','Perambalur','Pudukkottai','Ramanathapuram','Ranipet','Salem','Sivaganga','Tenkasi','Thanjavur','Theni','Thoothukudi','Tiruchirappalli','Tirunelveli','Tirupathur','Tiruppur','Tiruvallur','Tiruvannamalai','Tiruvarur','Vellore','Viluppuram','Virudhunagar'].map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Country</label>
+                  <label className="form-label">State / Country</label>
                   <input
                     type="text"
-                    required
-                    value={hotelForm.country}
-                    onChange={(e) => setHotelForm({ ...hotelForm, country: e.target.value })}
+                    readOnly
+                    value="Tamil Nadu, India"
                     className="form-input"
+                    style={{ opacity: 0.7, cursor: 'not-allowed' }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label">Address</label>
+                <label className="form-label">Street Address</label>
                 <input
                   type="text"
                   required
-                  placeholder="100 Coastal Boulevard"
+                  placeholder="e.g. 100 Anna Salai, Teynampet"
                   value={hotelForm.address}
                   onChange={(e) => setHotelForm({ ...hotelForm, address: e.target.value })}
                   className="form-input"

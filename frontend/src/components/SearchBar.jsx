@@ -2,9 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Calendar, Users } from 'lucide-react';
 
+// All 38 Tamil Nadu districts
+export const TN_DISTRICTS = [
+  'Ariyalur', 'Chengalpattu', 'Chennai', 'Coimbatore', 'Cuddalore',
+  'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi', 'Kancheepuram',
+  'Kanyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Mayiladuthurai',
+  'Nagapattinam', 'Namakkal', 'Nilgiris (Ooty)', 'Perambalur',
+  'Pudukkottai', 'Ramanathapuram', 'Ranipet', 'Salem', 'Sivaganga',
+  'Tenkasi', 'Thanjavur', 'Theni', 'Thoothukudi', 'Tiruchirappalli',
+  'Tirunelveli', 'Tirupathur', 'Tiruppur', 'Tiruvallur', 'Tiruvannamalai',
+  'Tiruvarur', 'Vellore', 'Viluppuram', 'Virudhunagar'
+];
+
 export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckOut = '', initialGuests = 2 }) => {
   const navigate = useNavigate();
-  
+
   // Default dates: tomorrow and 3 days later
   const getDefaultDate = (offsetDays) => {
     const d = new Date();
@@ -12,7 +24,7 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
     return d.toISOString().split('T')[0];
   };
 
-  const [city, setCity] = useState(initialCity);
+  const [district, setDistrict] = useState(initialCity);
   const [checkIn, setCheckIn] = useState(initialCheckIn || getDefaultDate(1));
   const [checkOut, setCheckOut] = useState(initialCheckOut || getDefaultDate(4));
   const [guests, setGuests] = useState(initialGuests);
@@ -20,11 +32,10 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
   const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (city.trim()) params.append('city', city.trim());
+    if (district) params.append('city', district);
     if (checkIn) params.append('checkIn', checkIn);
     if (checkOut) params.append('checkOut', checkOut);
     if (guests) params.append('guests', guests);
-
     navigate(`/hotels?${params.toString()}`);
   };
 
@@ -41,19 +52,23 @@ export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckO
         gap: '16px',
         alignItems: 'center'
       }}>
-        {/* Destination / City */}
+        {/* District Selector */}
         <div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-            <MapPin size={14} color="var(--primary)" /> Destination / City
+            <MapPin size={14} color="var(--primary)" /> Tamil Nadu District
           </label>
-          <input
-            type="text"
-            placeholder="e.g. New York, Miami, Paris..."
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="form-input"
+          <select
+            value={district}
+            onChange={(e) => setDistrict(e.target.value)}
+            className="form-select"
             style={{ padding: '10px 14px' }}
-          />
+            id="district-select"
+          >
+            <option value="">-- All Districts --</option>
+            {TN_DISTRICTS.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
         </div>
 
         {/* Check-in Date */}

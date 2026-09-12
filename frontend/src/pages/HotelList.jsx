@@ -2,7 +2,132 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { hotelService } from '../services/hotelService';
 import { HotelCard } from '../components/HotelCard';
-import { Filter, SlidersHorizontal, Search, RotateCcw, Star } from 'lucide-react';
+import { TN_DISTRICTS } from '../components/SearchBar';
+import { Filter, Search, RotateCcw, Star, MapPin } from 'lucide-react';
+
+// Tamil Nadu hotels fallback data
+const TN_HOTELS_FALLBACK = [
+  {
+    id: 1,
+    name: "The Grand Chola Palace",
+    description: "A majestic 5-star retreat in the heart of Chennai blending Chola dynasty architecture with ultra-modern luxury, offering panoramic Marina Beach views.",
+    address: "100 Anna Salai, Teynampet",
+    city: "Chennai",
+    country: "Tamil Nadu, India",
+    starRating: 4.9,
+    amenities: ["High-Speed WiFi", "Rooftop Pool", "Ayurvedic Spa", "Fitness Centre", "Valet Parking"],
+    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 8500
+  },
+  {
+    id: 2,
+    name: "Kovai Nilgiris Resort & Spa",
+    description: "Nestled at the gateway of the Nilgiri hills, this eco-luxury resort offers breathtaking valley views and authentic Kongu Vellalar cuisine.",
+    address: "32 Avinashi Road, Peelamedu",
+    city: "Coimbatore",
+    country: "Tamil Nadu, India",
+    starRating: 4.8,
+    amenities: ["WiFi", "Infinity Pool", "Ayurveda Centre", "Organic Restaurant", "Mountain View"],
+    images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 6200
+  },
+  {
+    id: 3,
+    name: "Meenakshi Heritage Grand",
+    description: "Located steps from the iconic Meenakshi Amman Temple in Madurai, offering temple-view suites, Dravidian-style architecture and Chettinad dining.",
+    address: "15 West Perumal Maistry Street",
+    city: "Madurai",
+    country: "Tamil Nadu, India",
+    starRating: 5.0,
+    amenities: ["WiFi", "Temple View Rooms", "Chettinad Restaurant", "Cultural Tours", "Spa"],
+    images: ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 7000
+  },
+  {
+    id: 4,
+    name: "Ooty Fern Hill Palace",
+    description: "A restored Victorian-era palace in Ooty surrounded by eucalyptus forests and tea gardens, offering heritage suites and Nilgiri mountain experiences.",
+    address: "Fern Hill Road, Ooty",
+    city: "Nilgiris (Ooty)",
+    country: "Tamil Nadu, India",
+    starRating: 4.9,
+    amenities: ["WiFi", "Fireplace Suites", "Tea Garden Walk", "Heritage Dining", "Horseback Riding"],
+    images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 9500
+  },
+  {
+    id: 5,
+    name: "Thanjavur Brihadeeswara Retreat",
+    description: "A culturally immersive luxury resort near the UNESCO World Heritage Brihadeeswara Temple, offering Bharatanatyam performances and art workshops.",
+    address: "4 Nayak Road, Thanjavur",
+    city: "Thanjavur",
+    country: "Tamil Nadu, India",
+    starRating: 4.7,
+    amenities: ["WiFi", "Cultural Performances", "Heritage Pool", "Temple Tours", "Art Workshops"],
+    images: ["https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 5500
+  },
+  {
+    id: 6,
+    name: "Kanyakumari Horizon Resort",
+    description: "At India's southernmost tip where three seas meet, offering stunning sunrise views, sea-facing cottages, and fresh seafood dining at a world-famous confluence.",
+    address: "Bypass Road, Kanyakumari",
+    city: "Kanyakumari",
+    country: "Tamil Nadu, India",
+    starRating: 4.8,
+    amenities: ["WiFi", "Sea-View Cottages", "Sunrise Deck", "Seafood Restaurant", "Boat Tours"],
+    images: ["https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 6800
+  },
+  {
+    id: 7,
+    name: "Salem Steel City Suites",
+    description: "A contemporary business and leisure hotel in Salem, offering premium suites, rooftop restaurant, and easy access to the Yercaud hill station.",
+    address: "18 Sarada College Road, Salem",
+    city: "Salem",
+    country: "Tamil Nadu, India",
+    starRating: 4.5,
+    amenities: ["WiFi", "Rooftop Restaurant", "Business Centre", "Pool", "Gym"],
+    images: ["https://images.unsplash.com/photo-1602002418082-a4443e081dd1?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 4200
+  },
+  {
+    id: 8,
+    name: "Trichy Rockfort River View",
+    description: "Overlooking the sacred Kaveri River and the iconic Rockfort Temple, this resort offers spiritual ambiance, river-view balconies, and authentic Trichy cuisine.",
+    address: "22 Rockfort Road, Tiruchirappalli",
+    city: "Tiruchirappalli",
+    country: "Tamil Nadu, India",
+    starRating: 4.6,
+    amenities: ["WiFi", "River View Rooms", "Temple Tours", "Traditional Cuisine", "Spa"],
+    images: ["https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 4800
+  },
+  {
+    id: 9,
+    name: "Tirunelveli Pearl City Resort",
+    description: "Named for Tirunelveli's famous Halwa and pearl-fishing heritage, this resort offers Nellai Saiva cuisine, a garden pool, and proximity to Courtallam waterfalls.",
+    address: "7 High Ground Road, Tirunelveli",
+    city: "Tirunelveli",
+    country: "Tamil Nadu, India",
+    starRating: 4.5,
+    amenities: ["WiFi", "Garden Pool", "Nellai Restaurant", "Waterfall Tours", "Ayurveda"],
+    images: ["https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 3900
+  },
+  {
+    id: 10,
+    name: "Vellore Fort Heritage Hotel",
+    description: "Adjacent to the magnificent Vellore Fort, this colonial-era boutique hotel blends British Raj architecture with modern comforts, offering fort-view rooms.",
+    address: "10 Fort Road, Vellore",
+    city: "Vellore",
+    country: "Tamil Nadu, India",
+    starRating: 4.4,
+    amenities: ["WiFi", "Fort View Rooms", "Heritage Restaurant", "Colonial Library", "Garden"],
+    images: ["https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=80"],
+    minPrice: 3500
+  }
+];
 
 export const HotelList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -10,93 +135,28 @@ export const HotelList = () => {
   const [loading, setLoading] = useState(true);
 
   // Filters State
-  const [city, setCity] = useState(searchParams.get('city') || '');
-  const [minPrice, setMinPrice] = useState(Number(searchParams.get('minPrice')) || 50);
-  const [maxPrice, setMaxPrice] = useState(Number(searchParams.get('maxPrice')) || 1000);
+  const [district, setDistrict] = useState(searchParams.get('city') || '');
+  const [maxPrice, setMaxPrice] = useState(Number(searchParams.get('maxPrice')) || 15000);
   const [minRating, setMinRating] = useState(Number(searchParams.get('minRating')) || 0);
   const [selectedAmenities, setSelectedAmenities] = useState(
     searchParams.get('amenities') ? searchParams.get('amenities').split(',') : []
   );
   const [sortBy, setSortBy] = useState('recommended');
 
-  const availableAmenities = ['WiFi', 'Swimming Pool', 'Spa', 'Fitness Center', 'Restaurant', 'Valet Parking', 'Beach Access', 'Bar & Lounge'];
+  const availableAmenities = ['WiFi', 'Swimming Pool', 'Spa', 'Fitness Centre', 'Restaurant', 'Valet Parking', 'Sea View', 'Mountain View', 'Temple Tours', 'Ayurveda'];
 
   const fetchHotels = async () => {
     setLoading(true);
     try {
       const params = {};
-      if (city) params.city = city;
-      if (minPrice) params.minPrice = minPrice;
+      if (district) params.city = district;
       if (maxPrice) params.maxPrice = maxPrice;
       if (minRating) params.minRating = minRating;
       if (selectedAmenities.length > 0) params.amenities = selectedAmenities.join(',');
-
       const data = await hotelService.getAllHotels(params);
       setHotels(data);
     } catch (err) {
-      // Fallback demo data
-      setHotels([
-        {
-          id: 1,
-          name: "Grand Palace Hotel & Suites",
-          description: "Luxury 5-star oasis in the heart of downtown with skyline views and premium spa.",
-          address: "100 Central Avenue",
-          city: "New York",
-          country: "USA",
-          starRating: 4.9,
-          amenities: ["WiFi", "Swimming Pool", "Spa", "Fitness Center", "Valet Parking"],
-          images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"],
-          minPrice: 220
-        },
-        {
-          id: 2,
-          name: "Azure Oceanfront Resort",
-          description: "Private beachside sanctuary offering infinity pools, cabanas, and fine dining.",
-          address: "450 Ocean Drive",
-          city: "Miami",
-          country: "USA",
-          starRating: 4.8,
-          amenities: ["WiFi", "Beach Access", "Infinity Pool", "Bar & Lounge", "Spa"],
-          images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"],
-          minPrice: 280
-        },
-        {
-          id: 3,
-          name: "The Ritz Heritage Palace",
-          description: "Timeless Parisian elegance with Michelin-starred cuisine and Seine river views.",
-          address: "15 Place Vendome",
-          city: "Paris",
-          country: "France",
-          starRating: 5.0,
-          amenities: ["WiFi", "Fine Dining", "Concierge", "Spa", "Champagne Bar"],
-          images: ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"],
-          minPrice: 350
-        },
-        {
-          id: 4,
-          name: "Sakura Imperial Hotel",
-          description: "Zen garden tranquility meets ultra-modern luxury in central Tokyo with Mount Fuji vistas.",
-          address: "1-1 Chiyoda",
-          city: "Tokyo",
-          country: "Japan",
-          starRating: 4.9,
-          amenities: ["WiFi", "Spa", "Onsen Hot Springs", "Tea Pavilion", "Fine Dining"],
-          images: ["https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80"],
-          minPrice: 310
-        },
-        {
-          id: 5,
-          name: "The Kensington Royal Suites",
-          description: "Historic boutique residence overlooking Hyde Park with private butler service.",
-          address: "88 Kensington High St",
-          city: "London",
-          country: "UK",
-          starRating: 4.7,
-          amenities: ["WiFi", "Valet Parking", "Restaurant", "Cocktail Lounge", "Fitness Center"],
-          images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"],
-          minPrice: 260
-        }
-      ]);
+      setHotels(TN_HOTELS_FALLBACK);
     } finally {
       setLoading(false);
     }
@@ -104,7 +164,7 @@ export const HotelList = () => {
 
   useEffect(() => {
     fetchHotels();
-  }, [city, minRating, selectedAmenities]);
+  }, [district, minRating, selectedAmenities]);
 
   const toggleAmenity = (amenity) => {
     setSelectedAmenities((prev) =>
@@ -113,9 +173,8 @@ export const HotelList = () => {
   };
 
   const handleResetFilters = () => {
-    setCity('');
-    setMinPrice(50);
-    setMaxPrice(1000);
+    setDistrict('');
+    setMaxPrice(15000);
     setMinRating(0);
     setSelectedAmenities([]);
     setSearchParams({});
@@ -124,11 +183,11 @@ export const HotelList = () => {
   // Filter client-side
   const filteredHotels = hotels
     .filter((h) => {
-      if (city && !h.city?.toLowerCase().includes(city.toLowerCase()) && !h.name?.toLowerCase().includes(city.toLowerCase())) {
+      if (district && !h.city?.toLowerCase().includes(district.toLowerCase()) && !h.name?.toLowerCase().includes(district.toLowerCase())) {
         return false;
       }
-      const price = h.minPrice || h.startingPrice || 200;
-      if (price < minPrice || price > maxPrice) return false;
+      const price = h.minPrice || h.startingPrice || 5000;
+      if (price > maxPrice) return false;
       if (minRating > 0 && (h.starRating || 5) < minRating) return false;
       if (selectedAmenities.length > 0) {
         const hAmenities = Array.isArray(h.amenities) ? h.amenities : (h.amenities ? h.amenities.split(',') : []);
@@ -138,8 +197,8 @@ export const HotelList = () => {
       return true;
     })
     .sort((a, b) => {
-      const priceA = a.minPrice || 200;
-      const priceB = b.minPrice || 200;
+      const priceA = a.minPrice || 5000;
+      const priceB = b.minPrice || 5000;
       if (sortBy === 'price-low') return priceA - priceB;
       if (sortBy === 'price-high') return priceB - priceA;
       if (sortBy === 'rating') return (b.starRating || 0) - (a.starRating || 0);
@@ -149,11 +208,22 @@ export const HotelList = () => {
   return (
     <div className="container" style={{ padding: '40px 24px' }}>
       <div style={{ marginBottom: '32px' }}>
+        {/* State banner */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          background: 'var(--primary-light)', border: '1px solid var(--border-glass-hover)',
+          borderRadius: 'var(--radius-full)', padding: '6px 14px', marginBottom: '12px'
+        }}>
+          <MapPin size={14} color="var(--primary)" />
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary)' }}>
+            Tamil Nadu, India — All 38 Districts
+          </span>
+        </div>
         <h1 className="heading-serif" style={{ fontSize: '2.4rem', color: 'var(--text-heading)', marginBottom: '8px' }}>
-          Explore Luxury Accommodations
+          Explore Tamil Nadu Hotels
         </h1>
         <p style={{ color: 'var(--text-secondary)' }}>
-          Found {filteredHotels.length} luxury {filteredHotels.length === 1 ? 'property' : 'properties'} matching your criteria
+          Found <strong style={{ color: 'var(--text-heading)' }}>{filteredHotels.length}</strong> luxury {filteredHotels.length === 1 ? 'property' : 'properties'} in Tamil Nadu
         </p>
       </div>
 
@@ -162,7 +232,7 @@ export const HotelList = () => {
         gridTemplateColumns: '280px 1fr',
         gap: '32px',
         alignItems: 'start'
-      }} className="hotel-list-layout">
+      }}>
         {/* Filter Sidebar */}
         <div className="glass-panel" style={{ padding: '24px', position: 'sticky', top: '100px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -178,16 +248,22 @@ export const HotelList = () => {
             </button>
           </div>
 
-          {/* Destination Search */}
+          {/* District Filter */}
           <div className="form-group">
-            <label className="form-label">City or Destination</label>
-            <input
-              type="text"
-              placeholder="e.g. New York, Paris..."
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="form-input"
-            />
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <MapPin size={13} color="var(--primary)" /> Tamil Nadu District
+            </label>
+            <select
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              className="form-select"
+              id="filter-district-select"
+            >
+              <option value="">-- All Districts --</option>
+              {TN_DISTRICTS.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
           </div>
 
           {/* Star Rating Filter */}
@@ -214,21 +290,25 @@ export const HotelList = () => {
             </div>
           </div>
 
-          {/* Price Range */}
+          {/* Price Range (in INR) */}
           <div className="form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
               <label className="form-label" style={{ margin: 0 }}>Max Price per Night</label>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)' }}>${maxPrice}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)' }}>₹{maxPrice.toLocaleString('en-IN')}</span>
             </div>
             <input
               type="range"
-              min={100}
-              max={1000}
-              step={25}
+              min={1000}
+              max={15000}
+              step={500}
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
               style={{ width: '100%', accentColor: 'var(--primary)' }}
             />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+              <span>₹1,000</span>
+              <span>₹15,000</span>
+            </div>
           </div>
 
           {/* Amenities Filter */}
@@ -266,17 +346,13 @@ export const HotelList = () => {
         <div>
           {/* Top Sort Bar */}
           <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '24px',
-            paddingBottom: '16px',
-            borderBottom: '1px solid var(--border-glass)'
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--border-glass)'
           }}>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-              Showing <strong style={{ color: 'var(--text-heading)' }}>{filteredHotels.length}</strong> available stays
+              Showing <strong style={{ color: 'var(--text-heading)' }}>{filteredHotels.length}</strong> properties
+              {district ? <> in <strong style={{ color: 'var(--primary)' }}>{district}</strong>, Tamil Nadu</> : ' across Tamil Nadu'}
             </span>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Sort by:</span>
               <select
@@ -295,14 +371,16 @@ export const HotelList = () => {
 
           {loading ? (
             <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-secondary)' }}>
-              Loading hotels...
+              Loading Tamil Nadu hotels...
             </div>
           ) : filteredHotels.length === 0 ? (
             <div className="glass-panel" style={{ textAlign: 'center', padding: '60px 20px' }}>
               <Search size={40} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '1.2rem', color: 'var(--text-heading)', marginBottom: '8px' }}>No properties found</h3>
+              <h3 style={{ fontSize: '1.2rem', color: 'var(--text-heading)', marginBottom: '8px' }}>
+                No properties found in {district || 'Tamil Nadu'}
+              </h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
-                Try adjusting your search criteria or resetting filters.
+                Try a different district or reset the filters.
               </p>
               <button onClick={handleResetFilters} className="btn btn-secondary">
                 Reset All Filters

@@ -128,7 +128,7 @@ export const HotelCard = ({ hotel }) => {
             <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block' }}>Starting from</span>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
               <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>
-                ${hotel.minPrice || hotel.startingPrice || 160}
+                ₹{(hotel.minPrice || hotel.startingPrice || 3999).toLocaleString('en-IN')}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/ night</span>
             </div>

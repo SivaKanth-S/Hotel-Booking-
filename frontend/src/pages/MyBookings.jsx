@@ -212,7 +212,7 @@ export const MyBookings = () => {
                     </div>
                     <div>
                       <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem' }}>Total Paid</span>
-                      <strong style={{ color: 'var(--success)' }}>${booking.totalPrice}</strong>
+                      <strong style={{ color: 'var(--success)' }}>₹{Number(booking.totalPrice).toLocaleString('en-IN')}</strong>
                     </div>
                   </div>
                 </div>

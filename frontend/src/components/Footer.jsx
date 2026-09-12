@@ -34,7 +34,7 @@ export const Footer = () => {
               <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>GRANDSTAY</span>
             </div>
             <p style={{ fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
-              The quintessential luxury hospitality platform. Concurrency-safe atomic reservations, curated suites, and unmatched travel experiences worldwide.
+              Tamil Nadu's premier luxury hotel booking platform. Discover heritage palaces, hill resorts, coastal retreats & temple-side stays across all 38 districts.
             </p>
             <div style={{ display: 'flex', gap: '10px' }}>
               <span className="badge badge-primary"><ShieldCheck size={12} /> Verified Stays</span>
@@ -53,12 +53,14 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Popular Destinations</h4>
+            <h4 style={{ color: 'var(--text-heading)', fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Popular TN Districts</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
-              <li><Link to="/hotels?city=New York">New York City, USA</Link></li>
-              <li><Link to="/hotels?city=Miami">Miami South Beach, USA</Link></li>
-              <li><Link to="/hotels?city=Paris">Paris, France</Link></li>
-              <li><Link to="/hotels?city=Tokyo">Tokyo, Japan</Link></li>
+              <li><Link to="/hotels?city=Chennai">Chennai — The Capital</Link></li>
+              <li><Link to="/hotels?city=Madurai">Madurai — Temple City</Link></li>
+              <li><Link to="/hotels?city=Nilgiris (Ooty)">Nilgiris — Hill Station</Link></li>
+              <li><Link to="/hotels?city=Kanyakumari">Kanyakumari — Land's End</Link></li>
+              <li><Link to="/hotels?city=Thanjavur">Thanjavur — Cultural Capital</Link></li>
+              <li><Link to="/hotels?city=Coimbatore">Coimbatore — Manchester of TN</Link></li>
             </ul>
           </div>
 
@@ -83,10 +85,10 @@ export const Footer = () => {
           fontSize: '0.85rem'
         }}>
           <div>
-            &copy; {new Date().getFullYear()} GrandStay Hospitality Inc. All rights reserved.
+            &copy; {new Date().getFullYear()} GrandStay Hospitality &mdash; Tamil Nadu, India. All rights reserved.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            Built with modern web standards and architectural excellence
+            Serving all 38 districts of Tamil Nadu 🏛️
           </div>
         </div>
       </div>

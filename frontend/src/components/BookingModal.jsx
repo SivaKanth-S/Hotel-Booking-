@@ -71,7 +71,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
       const result = await promotionService.validatePromo(promoCode.trim().toUpperCase());
       if (result.valid) {
         setPromoDiscount(result);
-        showSuccess(`Promo "${promoCode.toUpperCase()}" applied! You saved ${result.discountType === 'PERCENTAGE' ? `${result.discountValue}%` : `$${result.discountValue}`}`);
+        showSuccess(`Promo "${promoCode.toUpperCase()}" applied! You saved ${result.discountType === 'PERCENTAGE' ? `${result.discountValue}%` : `₹${result.discountValue}`}`);
       } else {
         setPromoDiscount(null);
         showError(result.message || 'Invalid promotion code');
@@ -226,7 +226,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                 </div>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block' }}>Total Paid</span>
-                  <strong style={{ color: 'var(--success)' }}>${confirmedBooking.totalPrice || finalTotal}</strong>
+                  <strong style={{ color: 'var(--success)' }}>₹{Number(confirmedBooking.totalPrice || finalTotal).toLocaleString('en-IN')}</strong>
                 </div>
               </div>
             </div>
@@ -255,7 +255,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                 Book {room.category}
               </h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                {hotel?.name} &bull; ${room.pricePerNight} per night
+                {hotel?.name} &bull; ₹{Number(room.pricePerNight).toLocaleString('en-IN')} per night
               </p>
             </div>
 
@@ -334,18 +334,18 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                 marginBottom: '24px'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
-                  <span>${room.pricePerNight} &times; {nights} {nights === 1 ? 'night' : 'nights'}</span>
-                  <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>${basePrice}</span>
+                  <span>₹{Number(room.pricePerNight).toLocaleString('en-IN')} &times; {nights} {nights === 1 ? 'night' : 'nights'}</span>
+                  <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>₹{Number(basePrice).toLocaleString('en-IN')}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
                   <span>Estimated Taxes & Fees (12%)</span>
-                  <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>${taxesAndFees}</span>
+                  <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>₹{Number(taxesAndFees).toLocaleString('en-IN')}</span>
                 </div>
 
                 {discountAmount > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--success)' }}>
                     <span>Promotion Discount</span>
-                    <span>-${discountAmount}</span>
+                    <span>-₹{Number(discountAmount).toLocaleString('en-IN')}</span>
                   </div>
                 )}
 
@@ -359,7 +359,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                 }}>
                   <span style={{ fontWeight: 700, color: 'var(--text-heading)' }}>Total Amount</span>
                   <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary)' }}>
-                    ${finalTotal}
+                    ₹{Number(finalTotal).toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
@@ -371,7 +371,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                 className="btn btn-primary btn-lg"
                 style={{ width: '100%' }}
               >
-                {submitting ? 'Reserving...' : `Confirm & Book Now ($${finalTotal})`}
+                {submitting ? 'Reserving...' : `Confirm & Book Now (₹${Number(finalTotal).toLocaleString('en-IN')})`}
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '12px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>

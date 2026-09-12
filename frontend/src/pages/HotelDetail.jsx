@@ -340,7 +340,7 @@ export const HotelDetail = () => {
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block' }}>Rate per night</span>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', justifyContent: 'flex-end' }}>
                       <span style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-heading)' }}>
-                        ${room.pricePerNight}
+                        ₹{Number(room.pricePerNight).toLocaleString('en-IN')}
                       </span>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/ night</span>
                     </div>
