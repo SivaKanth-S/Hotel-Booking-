@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Star, MapPin, Wifi, Waves, Coffee, Sparkles, ArrowRight } from 'lucide-react';
+import { handleImageError, DEFAULT_HOTEL_IMAGE } from '../utils/imageUtils';
 
 export const HotelCard = ({ hotel }) => {
   // Parse amenities if string or array
@@ -34,6 +35,7 @@ export const HotelCard = ({ hotel }) => {
             objectFit: 'cover',
             transition: 'transform 0.5s ease'
           }}
+          onError={(e) => handleImageError(e, DEFAULT_HOTEL_IMAGE)}
           onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
           onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
         />

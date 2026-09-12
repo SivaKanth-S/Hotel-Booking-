@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Calendar, Users } from 'lucide-react';
+import { TN_DISTRICTS } from '../data/tnData';
 
-// All 38 Tamil Nadu districts
-export const TN_DISTRICTS = [
-  'Ariyalur', 'Chengalpattu', 'Chennai', 'Coimbatore', 'Cuddalore',
-  'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi', 'Kancheepuram',
-  'Kanyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Mayiladuthurai',
-  'Nagapattinam', 'Namakkal', 'Nilgiris (Ooty)', 'Perambalur',
-  'Pudukkottai', 'Ramanathapuram', 'Ranipet', 'Salem', 'Sivaganga',
-  'Tenkasi', 'Thanjavur', 'Theni', 'Thoothukudi', 'Tiruchirappalli',
-  'Tirunelveli', 'Tirupathur', 'Tiruppur', 'Tiruvallur', 'Tiruvannamalai',
-  'Tiruvarur', 'Vellore', 'Viluppuram', 'Virudhunagar'
-];
+// Re-export so existing imports from SearchBar still work
+export { TN_DISTRICTS };
+
 
 export const SearchBar = ({ initialCity = '', initialCheckIn = '', initialCheckOut = '', initialGuests = 2 }) => {
   const navigate = useNavigate();

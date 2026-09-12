@@ -22,31 +22,31 @@ export const MyBookings = () => {
       const data = await bookingService.getMyBookings();
       setBookings(data);
     } catch (err) {
-      // Fallback demo bookings
+      // Fallback demo bookings for Tamil Nadu hotels
       setBookings([
         {
           id: 101,
-          reservationNumber: "RES-202609-9X8K21",
-          hotelName: "Grand Palace Hotel & Suites",
-          hotelCity: "New York",
-          roomCategory: "Deluxe Skyline Suite",
+          reservationNumber: "RES-202609-TN8K21",
+          hotelName: "The Grand Chola Palace",
+          hotelCity: "Chennai",
+          roomCategory: "Marina Panoramic Suite",
           checkInDate: "2026-10-15",
           checkOutDate: "2026-10-18",
           numGuests: 2,
-          totalPrice: 840,
+          totalPrice: 25500,
           status: "CONFIRMED",
           createdAt: "2026-09-11T12:00:00Z"
         },
         {
           id: 102,
-          reservationNumber: "RES-202608-4M2L89",
-          hotelName: "Azure Oceanfront Resort",
-          hotelCity: "Miami",
-          roomCategory: "Oceanfront Deluxe",
+          reservationNumber: "RES-202608-TN2L89",
+          hotelName: "Meenakshi Heritage Grand",
+          hotelCity: "Madurai",
+          roomCategory: "Temple View Heritage Room",
           checkInDate: "2026-08-01",
           checkOutDate: "2026-08-05",
           numGuests: 2,
-          totalPrice: 1120,
+          totalPrice: 14000,
           status: "CONFIRMED",
           createdAt: "2026-07-20T10:30:00Z"
         }

@@ -3,111 +3,10 @@ import { Link } from 'react-router-dom';
 import { SearchBar } from '../components/SearchBar';
 import { HotelCard } from '../components/HotelCard';
 import { hotelService } from '../services/hotelService';
-import { Sparkles, ShieldCheck, Clock, Award, ArrowRight, Star, Heart, Compass } from 'lucide-react';
+import { TN_HOTELS, TN_DESTINATIONS } from '../data/tnData';
+import { Sparkles, ShieldCheck, Clock, Award, ArrowRight, Star } from 'lucide-react';
+import { handleImageError, DEFAULT_HOTEL_IMAGE } from '../utils/imageUtils';
 
-// Tamil Nadu featured hotels fallback data
-const TN_HOTELS = [
-  {
-    id: 1,
-    name: "The Grand Chola Palace",
-    description: "A majestic 5-star retreat in the heart of Chennai blending Chola dynasty architecture with ultra-modern luxury, offering panoramic Marina Beach views and award-winning South Indian cuisine.",
-    address: "100 Anna Salai, Teynampet",
-    city: "Chennai",
-    country: "Tamil Nadu, India",
-    starRating: 4.9,
-    amenities: ["High-Speed WiFi", "Rooftop Pool", "Ayurvedic Spa", "Fitness Centre", "Valet Parking"],
-    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 8500
-  },
-  {
-    id: 2,
-    name: "Kovai Nilgiris Resort & Spa",
-    description: "Nestled at the gateway of the Nilgiri hills in Coimbatore, this eco-luxury resort offers breathtaking valley views, plantation walks, and authentic Kongu Vellalar cuisine.",
-    address: "32 Avinashi Road, Peelamedu",
-    city: "Coimbatore",
-    country: "Tamil Nadu, India",
-    starRating: 4.8,
-    amenities: ["WiFi", "Infinity Pool", "Ayurveda Centre", "Organic Restaurant", "Mountain View"],
-    images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 6200
-  },
-  {
-    id: 3,
-    name: "Meenakshi Heritage Grand",
-    description: "Located steps from the iconic Meenakshi Amman Temple in Madurai, this heritage hotel offers temple-view suites, Dravidian-style architecture, and traditional Chettinad dining experiences.",
-    address: "15 West Perumal Maistry Street",
-    city: "Madurai",
-    country: "Tamil Nadu, India",
-    starRating: 5.0,
-    amenities: ["WiFi", "Temple View Rooms", "Chettinad Restaurant", "Cultural Tours", "Spa"],
-    images: ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 7000
-  },
-  {
-    id: 4,
-    name: "Ooty Fern Hill Palace",
-    description: "A restored Victorian-era palace in Ooty (Nilgiris) surrounded by eucalyptus forests and tea gardens, offering heritage suites, bonfire evenings, and Nilgiri mountain train excursions.",
-    address: "Fern Hill Road, Ooty",
-    city: "Nilgiris (Ooty)",
-    country: "Tamil Nadu, India",
-    starRating: 4.9,
-    amenities: ["WiFi", "Fireplace Suites", "Tea Garden Walk", "Heritage Dining", "Horseback Riding"],
-    images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 9500
-  },
-  {
-    id: 5,
-    name: "Thanjavur Brihadeeswara Retreat",
-    description: "A culturally immersive luxury resort near the UNESCO World Heritage Brihadeeswara Temple, offering Bharatanatyam performances, classical Carnatic music evenings, and Thanjavur art workshops.",
-    address: "4 Nayak Road, Thanjavur",
-    city: "Thanjavur",
-    country: "Tamil Nadu, India",
-    starRating: 4.7,
-    amenities: ["WiFi", "Cultural Performances", "Heritage Pool", "Temple Tours", "Art Workshops"],
-    images: ["https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 5500
-  },
-  {
-    id: 6,
-    name: "Kanyakumari Horizon Resort",
-    description: "Perched at the southernmost tip of India where three seas meet, this resort offers stunning sunrise and sunset views, sea-facing cottages, and fresh seafood dining at the world's most iconic confluence.",
-    address: "Bypass Road, Kanyakumari",
-    city: "Kanyakumari",
-    country: "Tamil Nadu, India",
-    starRating: 4.8,
-    amenities: ["WiFi", "Sea-View Cottages", "Sunrise Deck", "Seafood Restaurant", "Boat Tours"],
-    images: ["https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 6800
-  }
-];
-
-// Tamil Nadu popular destinations
-const TN_DESTINATIONS = [
-  {
-    city: "Chennai",
-    region: "Tamil Nadu",
-    image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80",
-    count: "14 Hotels"
-  },
-  {
-    city: "Madurai",
-    region: "Tamil Nadu",
-    image: "https://images.unsplash.com/photo-1607972893596-ab6a7c9d2b9a?auto=format&fit=crop&w=600&q=80",
-    count: "9 Hotels"
-  },
-  {
-    city: "Nilgiris (Ooty)",
-    region: "Tamil Nadu",
-    image: "https://images.unsplash.com/photo-1609766857932-7a1b2f3892d3?auto=format&fit=crop&w=600&q=80",
-    count: "11 Hotels"
-  },
-  {
-    city: "Kanyakumari",
-    region: "Tamil Nadu",
-    image: "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=600&q=80",
-    count: "7 Hotels"
-  }
-];
 
 export const Home = () => {
   const [featuredHotels, setFeaturedHotels] = useState([]);
@@ -304,6 +203,7 @@ export const Home = () => {
                     width: '100%', height: '100%', objectFit: 'cover',
                     zIndex: 0, transition: 'transform 0.5s ease'
                   }}
+                  onError={(e) => handleImageError(e, DEFAULT_HOTEL_IMAGE)}
                   onMouseEnter={(e) => e.target.style.transform = 'scale(1.08)'}
                   onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                 />
@@ -320,7 +220,7 @@ export const Home = () => {
                     {dest.city}
                   </h3>
                   <span style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    {dest.count}
+                    {dest.hotelCount}
                   </span>
                 </div>
               </Link>

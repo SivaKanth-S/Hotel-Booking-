@@ -3,7 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { hotelService } from '../services/hotelService';
 import { roomService } from '../services/roomService';
 import { BookingModal } from '../components/BookingModal';
+import { TN_HOTELS } from '../data/tnData';
 import { Star, MapPin, Check, Users, Bed, Sparkles, Shield, ArrowLeft, Calendar } from 'lucide-react';
+import { handleImageError, DEFAULT_HOTEL_IMAGE, DEFAULT_ROOM_IMAGE } from '../utils/imageUtils';
 
 export const HotelDetail = () => {
   const { id } = useParams();
@@ -34,53 +36,29 @@ export const HotelDetail = () => {
         const roomsData = await roomService.getRoomsByHotel(id);
         setRooms(roomsData);
       } catch (err) {
-        // Fallback demo hotel & rooms
-        setHotel({
-          id: Number(id),
-          name: "Grand Palace Hotel & Suites",
-          description: "Nestled in the epicenter of the metropolis, Grand Palace Hotel & Suites presents an unparalleled synthesis of classical grandeur and contemporary luxury. Featuring award-winning culinary dining, full-service wellness spa, panoramic skyline lounges, and bespoke round-the-clock concierge services.",
-          address: "100 Central Avenue, Downtown",
-          city: "New York",
-          country: "United States",
-          starRating: 4.9,
-          amenities: ["High-speed WiFi", "Heated Swimming Pool", "Wellness Spa & Sauna", "24/7 Fitness Center", "Michelin-Starred Restaurant", "Valet Parking", "Cocktail Lounge"],
-          images: [
-            "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"
-          ]
-        });
-
-        setRooms([
+        // Fallback to Tamil Nadu hotel from centralized data
+        const found = TN_HOTELS.find(h => String(h.id) === String(id)) || TN_HOTELS[0];
+        setHotel(found);
+        setRooms(found.rooms || [
           {
-            id: 1,
-            hotelId: Number(id),
-            category: "Standard King Room",
-            pricePerNight: 190,
+            id: found.id * 10 + 1,
+            hotelId: found.id,
+            category: "Heritage Deluxe Suite",
+            pricePerNight: found.minPrice || 5500,
             capacity: 2,
             totalUnits: 10,
-            amenities: ["1 King Bed", "City View", "Smart 4K TV", "Rain Shower", "Free High-Speed WiFi", "Espresso Maker"],
-            images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"]
+            amenities: ["1 King Bed", "District / Garden View", "Smart 4K TV", "Rain Shower", "Free High-Speed WiFi", "South Indian Coffee Bar"],
+            images: [found.images[1] || found.images[0]]
           },
           {
-            id: 2,
-            hotelId: Number(id),
-            category: "Deluxe Skyline Suite",
-            pricePerNight: 280,
-            capacity: 3,
-            totalUnits: 6,
-            amenities: ["1 King Bed + Sofa Bed", "Panoramic Skyline Balcony", "Marble Bath with Soaking Tub", "Complimentary Lounge Access", "Mini Bar"],
-            images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"]
-          },
-          {
-            id: 3,
-            hotelId: Number(id),
-            category: "Presidential Royal Suite",
-            pricePerNight: 490,
+            id: found.id * 10 + 2,
+            hotelId: found.id,
+            category: "Royal Presidential Suite",
+            pricePerNight: Math.round((found.minPrice || 5500) * 1.6),
             capacity: 4,
-            totalUnits: 2,
-            amenities: ["2 King Master Bedrooms", "Private Rooftop Jacuzzi", "Dedicated Butler Service", "Private Dining Area", "Complimentary Vintage Champagne"],
-            images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"]
+            totalUnits: 4,
+            amenities: ["2 King Master Bedrooms", "Panoramic Terrace", "Dedicated Butler Service", "Ayurvedic Spa Access", "Traditional Thali Breakfast"],
+            images: [found.images[2] || found.images[0]]
           }
         ]);
       } finally {
@@ -174,21 +152,24 @@ export const HotelDetail = () => {
         height: '420px'
       }}>
         <img
-          src={imagesList[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80'}
+          src={imagesList[0] || DEFAULT_HOTEL_IMAGE}
           alt={hotel.name}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={(e) => handleImageError(e, DEFAULT_HOTEL_IMAGE)}
         />
         {imagesList.length > 1 && (
           <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '16px' }}>
             <img
-              src={imagesList[1] || 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80'}
+              src={imagesList[1] || DEFAULT_HOTEL_IMAGE}
               alt={hotel.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => handleImageError(e, DEFAULT_HOTEL_IMAGE)}
             />
             <img
-              src={imagesList[2] || imagesList[0]}
+              src={imagesList[2] || imagesList[0] || DEFAULT_HOTEL_IMAGE}
               alt={hotel.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => handleImageError(e, DEFAULT_HOTEL_IMAGE)}
             />
           </div>
         )}
@@ -292,6 +273,7 @@ export const HotelDetail = () => {
                     src={roomImage}
                     alt={room.category}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => handleImageError(e, DEFAULT_ROOM_IMAGE)}
                   />
                 </div>
 

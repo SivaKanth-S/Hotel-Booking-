@@ -6,6 +6,7 @@ import { hotelService } from '../services/hotelService';
 import { roomService } from '../services/roomService';
 import { bookingService } from '../services/bookingService';
 import { Shield, Plus, Building2, Bed, CalendarCheck, DollarSign, X, Check, Trash2, Edit } from 'lucide-react';
+import { TN_DISTRICTS, TN_HOTELS } from '../data/tnData';
 
 export const AdminDashboard = () => {
   const { isAdmin, isAuthenticated } = useAuth();
@@ -31,7 +32,7 @@ export const AdminDashboard = () => {
     country: 'Tamil Nadu, India',
     starRating: 4.8,
     amenities: 'WiFi, Swimming Pool, Ayurvedic Spa, Fitness Centre, Restaurant, Valet Parking',
-    images: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80'
+    images: 'https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&w=1200&q=85'
   });
 
   // New Room Form State
@@ -54,13 +55,15 @@ export const AdminDashboard = () => {
       const bookingsData = await bookingService.getAllBookingsAdmin();
       setBookings(bookingsData);
     } catch (err) {
-      // Fallback
-      setHotels([
-        { id: 1, name: "The Grand Chola Palace", city: "Chennai", country: "Tamil Nadu, India", starRating: 4.9, minPrice: 8500 },
-        { id: 2, name: "Meenakshi Heritage Grand", city: "Madurai", country: "Tamil Nadu, India", starRating: 5.0, minPrice: 7000 },
-        { id: 3, name: "Ooty Fern Hill Palace", city: "Nilgiris (Ooty)", country: "Tamil Nadu, India", starRating: 4.9, minPrice: 9500 },
-        { id: 4, name: "Kovai Nilgiris Resort & Spa", city: "Coimbatore", country: "Tamil Nadu, India", starRating: 4.8, minPrice: 6200 }
-      ]);
+      // Fallback to all Tamil Nadu hotels
+      setHotels(TN_HOTELS.map(h => ({
+        id: h.id,
+        name: h.name,
+        city: h.city,
+        country: h.country,
+        starRating: h.starRating,
+        minPrice: h.minPrice
+      })));
       setBookings([
         { id: 101, reservationNumber: "RES-202609-TN8K21", hotelName: "The Grand Chola Palace", roomCategory: "Chola Heritage Suite", checkInDate: "2026-10-15", checkOutDate: "2026-10-18", totalPrice: 25500, status: "CONFIRMED" }
       ]);
@@ -338,7 +341,7 @@ export const AdminDashboard = () => {
                     id="admin-district-select"
                   >
                     <option value="">-- Select District --</option>
-                    {['Ariyalur','Chengalpattu','Chennai','Coimbatore','Cuddalore','Dharmapuri','Dindigul','Erode','Kallakurichi','Kancheepuram','Kanyakumari','Karur','Krishnagiri','Madurai','Mayiladuthurai','Nagapattinam','Namakkal','Nilgiris (Ooty)','Perambalur','Pudukkottai','Ramanathapuram','Ranipet','Salem','Sivaganga','Tenkasi','Thanjavur','Theni','Thoothukudi','Tiruchirappalli','Tirunelveli','Tirupathur','Tiruppur','Tiruvallur','Tiruvannamalai','Tiruvarur','Vellore','Viluppuram','Virudhunagar'].map((d) => (
+                    {TN_DISTRICTS.map((d) => (
                       <option key={d} value={d}>{d}</option>
                     ))}
                   </select>

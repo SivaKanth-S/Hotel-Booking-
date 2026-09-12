@@ -2,132 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { hotelService } from '../services/hotelService';
 import { HotelCard } from '../components/HotelCard';
-import { TN_DISTRICTS } from '../components/SearchBar';
+import { TN_DISTRICTS, TN_HOTELS } from '../data/tnData';
 import { Filter, Search, RotateCcw, Star, MapPin } from 'lucide-react';
 
-// Tamil Nadu hotels fallback data
-const TN_HOTELS_FALLBACK = [
-  {
-    id: 1,
-    name: "The Grand Chola Palace",
-    description: "A majestic 5-star retreat in the heart of Chennai blending Chola dynasty architecture with ultra-modern luxury, offering panoramic Marina Beach views.",
-    address: "100 Anna Salai, Teynampet",
-    city: "Chennai",
-    country: "Tamil Nadu, India",
-    starRating: 4.9,
-    amenities: ["High-Speed WiFi", "Rooftop Pool", "Ayurvedic Spa", "Fitness Centre", "Valet Parking"],
-    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 8500
-  },
-  {
-    id: 2,
-    name: "Kovai Nilgiris Resort & Spa",
-    description: "Nestled at the gateway of the Nilgiri hills, this eco-luxury resort offers breathtaking valley views and authentic Kongu Vellalar cuisine.",
-    address: "32 Avinashi Road, Peelamedu",
-    city: "Coimbatore",
-    country: "Tamil Nadu, India",
-    starRating: 4.8,
-    amenities: ["WiFi", "Infinity Pool", "Ayurveda Centre", "Organic Restaurant", "Mountain View"],
-    images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 6200
-  },
-  {
-    id: 3,
-    name: "Meenakshi Heritage Grand",
-    description: "Located steps from the iconic Meenakshi Amman Temple in Madurai, offering temple-view suites, Dravidian-style architecture and Chettinad dining.",
-    address: "15 West Perumal Maistry Street",
-    city: "Madurai",
-    country: "Tamil Nadu, India",
-    starRating: 5.0,
-    amenities: ["WiFi", "Temple View Rooms", "Chettinad Restaurant", "Cultural Tours", "Spa"],
-    images: ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 7000
-  },
-  {
-    id: 4,
-    name: "Ooty Fern Hill Palace",
-    description: "A restored Victorian-era palace in Ooty surrounded by eucalyptus forests and tea gardens, offering heritage suites and Nilgiri mountain experiences.",
-    address: "Fern Hill Road, Ooty",
-    city: "Nilgiris (Ooty)",
-    country: "Tamil Nadu, India",
-    starRating: 4.9,
-    amenities: ["WiFi", "Fireplace Suites", "Tea Garden Walk", "Heritage Dining", "Horseback Riding"],
-    images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 9500
-  },
-  {
-    id: 5,
-    name: "Thanjavur Brihadeeswara Retreat",
-    description: "A culturally immersive luxury resort near the UNESCO World Heritage Brihadeeswara Temple, offering Bharatanatyam performances and art workshops.",
-    address: "4 Nayak Road, Thanjavur",
-    city: "Thanjavur",
-    country: "Tamil Nadu, India",
-    starRating: 4.7,
-    amenities: ["WiFi", "Cultural Performances", "Heritage Pool", "Temple Tours", "Art Workshops"],
-    images: ["https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 5500
-  },
-  {
-    id: 6,
-    name: "Kanyakumari Horizon Resort",
-    description: "At India's southernmost tip where three seas meet, offering stunning sunrise views, sea-facing cottages, and fresh seafood dining at a world-famous confluence.",
-    address: "Bypass Road, Kanyakumari",
-    city: "Kanyakumari",
-    country: "Tamil Nadu, India",
-    starRating: 4.8,
-    amenities: ["WiFi", "Sea-View Cottages", "Sunrise Deck", "Seafood Restaurant", "Boat Tours"],
-    images: ["https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 6800
-  },
-  {
-    id: 7,
-    name: "Salem Steel City Suites",
-    description: "A contemporary business and leisure hotel in Salem, offering premium suites, rooftop restaurant, and easy access to the Yercaud hill station.",
-    address: "18 Sarada College Road, Salem",
-    city: "Salem",
-    country: "Tamil Nadu, India",
-    starRating: 4.5,
-    amenities: ["WiFi", "Rooftop Restaurant", "Business Centre", "Pool", "Gym"],
-    images: ["https://images.unsplash.com/photo-1602002418082-a4443e081dd1?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 4200
-  },
-  {
-    id: 8,
-    name: "Trichy Rockfort River View",
-    description: "Overlooking the sacred Kaveri River and the iconic Rockfort Temple, this resort offers spiritual ambiance, river-view balconies, and authentic Trichy cuisine.",
-    address: "22 Rockfort Road, Tiruchirappalli",
-    city: "Tiruchirappalli",
-    country: "Tamil Nadu, India",
-    starRating: 4.6,
-    amenities: ["WiFi", "River View Rooms", "Temple Tours", "Traditional Cuisine", "Spa"],
-    images: ["https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 4800
-  },
-  {
-    id: 9,
-    name: "Tirunelveli Pearl City Resort",
-    description: "Named for Tirunelveli's famous Halwa and pearl-fishing heritage, this resort offers Nellai Saiva cuisine, a garden pool, and proximity to Courtallam waterfalls.",
-    address: "7 High Ground Road, Tirunelveli",
-    city: "Tirunelveli",
-    country: "Tamil Nadu, India",
-    starRating: 4.5,
-    amenities: ["WiFi", "Garden Pool", "Nellai Restaurant", "Waterfall Tours", "Ayurveda"],
-    images: ["https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 3900
-  },
-  {
-    id: 10,
-    name: "Vellore Fort Heritage Hotel",
-    description: "Adjacent to the magnificent Vellore Fort, this colonial-era boutique hotel blends British Raj architecture with modern comforts, offering fort-view rooms.",
-    address: "10 Fort Road, Vellore",
-    city: "Vellore",
-    country: "Tamil Nadu, India",
-    starRating: 4.4,
-    amenities: ["WiFi", "Fort View Rooms", "Heritage Restaurant", "Colonial Library", "Garden"],
-    images: ["https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=80"],
-    minPrice: 3500
-  }
-];
+
 
 export const HotelList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -156,7 +34,7 @@ export const HotelList = () => {
       const data = await hotelService.getAllHotels(params);
       setHotels(data);
     } catch (err) {
-      setHotels(TN_HOTELS_FALLBACK);
+      setHotels(TN_HOTELS);
     } finally {
       setLoading(false);
     }
