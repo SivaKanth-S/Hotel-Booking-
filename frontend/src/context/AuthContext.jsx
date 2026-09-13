@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
         };
         localStorage.setItem('grandstay_jwt', adminData.token);
         localStorage.setItem('grandstay_user', JSON.stringify(adminData));
+        localStorage.setItem('grandstay_mock_session', 'true');
         setUser(adminData);
         return adminData;
       }
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem('grandstay_mock_session');
     authService.logout();
     setUser(null);
   };

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,10 @@ public class BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
+        if (request.getRoomId() == null) {
+            throw new BadRequestException("Room ID is required");
+        }
+
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + request.getRoomId()));
 
@@ -71,14 +76,17 @@ public class BookingService {
         if (request.getNumGuests() == null || request.getNumGuests() <= 0) {
             throw new BadRequestException("Number of guests must be at least 1");
         }
-        if (request.getNumGuests() > room.getCapacity()) {
-            throw new BadRequestException("Guest count exceeds maximum room capacity of " + room.getCapacity());
+        int maxCapacity = room.getCapacity() != null ? room.getCapacity() : 4;
+        if (request.getNumGuests() > maxCapacity) {
+            throw new BadRequestException("Guest count exceeds maximum room capacity of " + maxCapacity);
         }
 
         long nights = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
         if (nights <= 0) {
             throw new BadRequestException("Booking duration must be at least 1 night");
         }
+
+        int totalUnits = room.getTotalUnits() != null ? room.getTotalUnits() : 1;
 
         // --- Atomic availability check & decrement (one row per date, pessimistic lock) ---
         LocalDate curr = request.getCheckInDate();
@@ -89,23 +97,25 @@ public class BookingService {
             RoomAvailability availability;
             if (availOpt.isPresent()) {
                 availability = availOpt.get();
-                if (availability.getUnitsAvailable() <= 0) {
+                int availableUnits = availability.getUnitsAvailable() != null ? availability.getUnitsAvailable() : 0;
+                if (availableUnits <= 0) {
                     throw new ConflictException("No rooms available for date: " + curr);
                 }
-                availability.setUnitsAvailable(availability.getUnitsAvailable() - 1);
+                availability.setUnitsAvailable(availableUnits - 1);
             } else {
                 // First booking ever for this date — lazy-create the record
-                if (room.getTotalUnits() <= 0) {
+                if (totalUnits <= 0) {
                     throw new ConflictException("No rooms available for date: " + curr);
                 }
-                availability = new RoomAvailability(room, curr, room.getTotalUnits() - 1);
+                availability = new RoomAvailability(room, curr, totalUnits - 1);
             }
             roomAvailabilityRepository.save(availability);
             curr = curr.plusDays(1);
         }
 
         // --- Pricing & promotion ---
-        double baseTotal = room.getPricePerNight() * nights;
+        double pricePerNight = room.getPricePerNight() != null ? room.getPricePerNight() : 0.0;
+        double baseTotal = pricePerNight * nights;
         double discountAmount = 0.0;
         Promotion appliedPromo = null;
 
@@ -142,7 +152,9 @@ public class BookingService {
         BookingResponse response = mapToResponse(saved, discountAmount);
 
         // --- Send booking confirmation email asynchronously ---
-        emailService.sendBookingConfirmationEmail(user.getEmail(), user.getName(), response);
+        if (user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+            emailService.sendBookingConfirmationEmail(user.getEmail(), user.getName(), response);
+        }
 
         return response;
     }
@@ -165,7 +177,8 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
 
-        if (!isAdmin && !booking.getUser().getId().equals(currentUserId)) {
+        User bookingUser = booking.getUser();
+        if (!isAdmin && (bookingUser == null || !bookingUser.getId().equals(currentUserId))) {
             throw new AccessDeniedException("You are not authorized to view this booking");
         }
 
@@ -174,17 +187,14 @@ public class BookingService {
 
     // -----------------------------------------------------------------------
     // CANCEL BOOKING
-    // Bug fix: when a date has no RoomAvailability record yet (edge-case where
-    // the record was never written), we now create one that restores back to
-    // totalUnits instead of silently skipping, ensuring availability is
-    // always correctly restored regardless of data state.
     // -----------------------------------------------------------------------
     @Transactional
     public BookingResponse cancelBooking(Long id, Long currentUserId, boolean isAdmin) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
 
-        if (!isAdmin && !booking.getUser().getId().equals(currentUserId)) {
+        User bookingUser = booking.getUser();
+        if (!isAdmin && (bookingUser == null || !bookingUser.getId().equals(currentUserId))) {
             throw new AccessDeniedException("You are not authorized to cancel this booking");
         }
 
@@ -196,31 +206,33 @@ public class BookingService {
 
         // --- Restore room availability for the full date range ---
         Room room = booking.getRoom();
-        LocalDate curr = booking.getCheckInDate();
-        while (curr.isBefore(booking.getCheckOutDate())) {
-            Optional<RoomAvailability> availOpt =
-                    roomAvailabilityRepository.findByRoomIdAndDateWithLock(room.getId(), curr);
+        if (room != null) {
+            int totalUnits = room.getTotalUnits() != null ? room.getTotalUnits() : 1;
+            LocalDate curr = booking.getCheckInDate();
+            while (curr != null && booking.getCheckOutDate() != null && curr.isBefore(booking.getCheckOutDate())) {
+                Optional<RoomAvailability> availOpt =
+                        roomAvailabilityRepository.findByRoomIdAndDateWithLock(room.getId(), curr);
 
-            if (availOpt.isPresent()) {
-                // Record exists — simply increment, capped at total units
-                RoomAvailability avail = availOpt.get();
-                avail.setUnitsAvailable(Math.min(room.getTotalUnits(), avail.getUnitsAvailable() + 1));
-                roomAvailabilityRepository.save(avail);
-            } else {
-                // FIX: No record exists for this date (data gap). Create one that
-                // reflects full availability so future bookings can use the slot.
-                RoomAvailability avail = new RoomAvailability(room, curr, room.getTotalUnits());
-                roomAvailabilityRepository.save(avail);
+                if (availOpt.isPresent()) {
+                    RoomAvailability avail = availOpt.get();
+                    int currentUnits = avail.getUnitsAvailable() != null ? avail.getUnitsAvailable() : 0;
+                    avail.setUnitsAvailable(Math.min(totalUnits, currentUnits + 1));
+                    roomAvailabilityRepository.save(avail);
+                } else {
+                    RoomAvailability avail = new RoomAvailability(room, curr, totalUnits);
+                    roomAvailabilityRepository.save(avail);
+                }
+                curr = curr.plusDays(1);
             }
-            curr = curr.plusDays(1);
         }
 
         Booking updated = bookingRepository.save(booking);
         BookingResponse response = mapToResponse(updated, 0.0);
 
         // --- Send cancellation email asynchronously ---
-        User user = booking.getUser();
-        emailService.sendBookingCancellationEmail(user.getEmail(), user.getName(), response);
+        if (bookingUser != null && bookingUser.getEmail() != null && !bookingUser.getEmail().trim().isEmpty()) {
+            emailService.sendBookingCancellationEmail(bookingUser.getEmail(), bookingUser.getName(), response);
+        }
 
         return response;
     }
@@ -276,7 +288,8 @@ public class BookingService {
         }
         double discount = discountAmount;
         if (discount == 0.0 && booking.getPromotion() != null && booking.getRoom() != null && res.getTotalNights() != null) {
-            double base = booking.getRoom().getPricePerNight() * res.getTotalNights();
+            double pricePerNight = booking.getRoom().getPricePerNight() != null ? booking.getRoom().getPricePerNight() : 0.0;
+            double base = pricePerNight * res.getTotalNights();
             if (booking.getPromotion().getDiscountType() == DiscountType.PERCENTAGE) {
                 discount = (base * booking.getPromotion().getDiscountValue()) / 100.0;
             } else {

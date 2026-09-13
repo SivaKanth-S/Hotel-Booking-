@@ -63,7 +63,7 @@ public class PromotionService {
                 request.getDiscountValue(),
                 request.getValidFrom(),
                 request.getValidTo(),
-                request.getActive() != null ? request.getActive() : true
+                request.getActive() == null ? Boolean.TRUE : request.getActive()
         );
 
         return promotionRepository.save(promo);

@@ -15,6 +15,7 @@ export const AdminBookings = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL', 'CONFIRMED', 'CANCELLED'
   const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState(null);
 
   const loadBookings = async () => {
     setLoading(true);
@@ -84,13 +85,17 @@ export const AdminBookings = () => {
   }, [isAuthenticated, isAdmin]);
 
   const handleCancelBooking = async (id) => {
+    if (cancellingId === id) return;
     if (!window.confirm('Are you sure you want to cancel this guest reservation?')) return;
+    setCancellingId(id);
     try {
       await bookingService.cancelBooking(id);
       showSuccess('Booking cancelled successfully and room availability restored.');
       loadBookings();
     } catch (err) {
-      showError(err.response?.data?.message || 'Failed to cancel booking');
+      showError(err.userMessage || err.response?.data?.message || 'Failed to cancel booking');
+    } finally {
+      setCancellingId(null);
     }
   };
 
@@ -282,10 +287,11 @@ export const AdminBookings = () => {
                     {b.status === 'CONFIRMED' && (
                       <button
                         onClick={() => handleCancelBooking(b.id)}
+                        disabled={cancellingId === b.id}
                         className="btn btn-danger btn-sm"
                         style={{ fontSize: '0.75rem', padding: '4px 8px' }}
                       >
-                        Cancel Stay
+                        {cancellingId === b.id ? 'Cancelling...' : 'Cancel Stay'}
                       </button>
                     )}
                   </td>

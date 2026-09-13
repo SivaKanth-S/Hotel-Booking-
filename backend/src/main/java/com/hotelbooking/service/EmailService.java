@@ -1,13 +1,11 @@
 package com.hotelbooking.service;
 
 import com.hotelbooking.dto.BookingResponse;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -24,10 +22,10 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${app.mail.from}")
+    @Value("${app.mail.from:your-email@gmail.com}")
     private String fromAddress;
 
-    @Value("${app.mail.from-name}")
+    @Value("${app.mail.from-name:Hotel Booking}")
     private String fromName;
 
     // -----------------------------------------------------------------------
@@ -35,9 +33,16 @@ public class EmailService {
     // -----------------------------------------------------------------------
     @Async
     public void sendWelcomeEmail(String toEmail, String userName) {
-        String subject = "Welcome to Hotel Booking — Your account is ready!";
-        String body = buildWelcomeHtml(userName, toEmail);
-        sendHtmlEmail(toEmail, subject, body);
+        try {
+            if (toEmail == null || toEmail.trim().isEmpty()) {
+                return;
+            }
+            String subject = "Welcome to Hotel Booking — Your account is ready!";
+            String body = buildWelcomeHtml(userName != null ? userName : "Valued Guest", toEmail);
+            sendHtmlEmail(toEmail, subject, body);
+        } catch (Throwable t) {
+            log.warn("Failed to send welcome email to {}: {}", toEmail, t.getMessage());
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -45,9 +50,17 @@ public class EmailService {
     // -----------------------------------------------------------------------
     @Async
     public void sendBookingConfirmationEmail(String toEmail, String userName, BookingResponse booking) {
-        String subject = "Booking Confirmed — " + booking.getReservationNumber();
-        String body = buildBookingConfirmationHtml(userName, booking);
-        sendHtmlEmail(toEmail, subject, body);
+        try {
+            if (toEmail == null || toEmail.trim().isEmpty() || booking == null) {
+                return;
+            }
+            String resNum = booking.getReservationNumber() != null ? booking.getReservationNumber() : "";
+            String subject = "Booking Confirmed — " + resNum;
+            String body = buildBookingConfirmationHtml(userName != null ? userName : "Valued Guest", booking);
+            sendHtmlEmail(toEmail, subject, body);
+        } catch (Throwable t) {
+            log.warn("Failed to send booking confirmation email to {}: {}", toEmail, t.getMessage());
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -55,27 +68,40 @@ public class EmailService {
     // -----------------------------------------------------------------------
     @Async
     public void sendBookingCancellationEmail(String toEmail, String userName, BookingResponse booking) {
-        String subject = "Booking Cancelled — " + booking.getReservationNumber();
-        String body = buildBookingCancellationHtml(userName, booking);
-        sendHtmlEmail(toEmail, subject, body);
+        try {
+            if (toEmail == null || toEmail.trim().isEmpty() || booking == null) {
+                return;
+            }
+            String resNum = booking.getReservationNumber() != null ? booking.getReservationNumber() : "";
+            String subject = "Booking Cancelled — " + resNum;
+            String body = buildBookingCancellationHtml(userName != null ? userName : "Valued Guest", booking);
+            sendHtmlEmail(toEmail, subject, body);
+        } catch (Throwable t) {
+            log.warn("Failed to send booking cancellation email to {}: {}", toEmail, t.getMessage());
+        }
     }
 
     // -----------------------------------------------------------------------
-    // Core send helper — catches all mail exceptions so they never bubble up
+    // Core send helper — catches all exceptions so they never bubble up
     // -----------------------------------------------------------------------
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
         try {
+            if (mailSender == null || to == null || to.trim().isEmpty()) {
+                return;
+            }
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(fromAddress, fromName);
-            helper.setTo(to);
+            String sender = (fromAddress != null && !fromAddress.trim().isEmpty()) ? fromAddress : "noreply@hotelbooking.com";
+            String senderName = (fromName != null && !fromName.trim().isEmpty()) ? fromName : "Hotel Booking";
+            helper.setFrom(sender, senderName);
+            helper.setTo(to.trim());
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
             mailSender.send(message);
             log.info("Email sent to {} — subject: {}", to, subject);
-        } catch (MailException | MessagingException | java.io.UnsupportedEncodingException ex) {
+        } catch (Throwable ex) {
             // Log but never propagate — email failure must not break the API response
-            log.error("Failed to send email to {} — {}", to, ex.getMessage(), ex);
+            log.warn("Failed to send email to {} — {}", to, ex.getMessage());
         }
     }
 
@@ -116,8 +142,13 @@ public class EmailService {
     }
 
     private String buildBookingConfirmationHtml(String userName, BookingResponse booking) {
-        String checkIn  = booking.getCheckInDate()  != null ? booking.getCheckInDate().format(DATE_FMT)  : "-";
-        String checkOut = booking.getCheckOutDate() != null ? booking.getCheckOutDate().format(DATE_FMT) : "-";
+        String checkIn  = (booking != null && booking.getCheckInDate() != null)  ? booking.getCheckInDate().format(DATE_FMT)  : "-";
+        String checkOut = (booking != null && booking.getCheckOutDate() != null) ? booking.getCheckOutDate().format(DATE_FMT) : "-";
+        double pricePerNight = (booking != null && booking.getPricePerNight() != null) ? booking.getPricePerNight() : 0.0;
+        double totalPrice = (booking != null && booking.getTotalPrice() != null) ? booking.getTotalPrice() : 0.0;
+        double discountAmount = (booking != null && booking.getDiscountAmount() != null) ? booking.getDiscountAmount() : 0.0;
+        long nights = (booking != null && booking.getTotalNights() != null) ? booking.getTotalNights() : 0L;
+        int guests = (booking != null && booking.getNumGuests() != null) ? booking.getNumGuests() : 1;
 
         return "<!DOCTYPE html>" +
                "<html><head><meta charset='UTF-8'>" +
@@ -141,18 +172,18 @@ public class EmailService {
                "    <h2>Hi " + escapeHtml(userName) + ", your booking is confirmed!</h2>" +
                "    <p>Here is a summary of your reservation:</p>" +
                "    <table>" +
-               "      <tr><td>Reservation No.</td><td>" + escapeHtml(booking.getReservationNumber()) + "</td></tr>" +
-               "      <tr><td>Hotel</td><td>" + escapeHtml(booking.getHotelName()) + ", " + escapeHtml(booking.getHotelCity()) + "</td></tr>" +
-               "      <tr><td>Room Category</td><td>" + escapeHtml(booking.getRoomCategory()) + "</td></tr>" +
+               "      <tr><td>Reservation No.</td><td>" + escapeHtml(booking != null ? booking.getReservationNumber() : "") + "</td></tr>" +
+               "      <tr><td>Hotel</td><td>" + escapeHtml(booking != null ? booking.getHotelName() : "") + ", " + escapeHtml(booking != null ? booking.getHotelCity() : "") + "</td></tr>" +
+               "      <tr><td>Room Category</td><td>" + escapeHtml(booking != null ? booking.getRoomCategory() : "") + "</td></tr>" +
                "      <tr><td>Check-in</td><td>" + checkIn + "</td></tr>" +
                "      <tr><td>Check-out</td><td>" + checkOut + "</td></tr>" +
-               "      <tr><td>Nights</td><td>" + booking.getTotalNights() + "</td></tr>" +
-               "      <tr><td>Guests</td><td>" + booking.getNumGuests() + "</td></tr>" +
-               "      <tr><td>Price / Night</td><td>₹" + String.format("%.2f", booking.getPricePerNight()) + "</td></tr>" +
-               (booking.getDiscountAmount() != null && booking.getDiscountAmount() > 0
-                   ? "<tr><td>Discount</td><td>- ₹" + String.format("%.2f", booking.getDiscountAmount()) + "</td></tr>"
+               "      <tr><td>Nights</td><td>" + nights + "</td></tr>" +
+               "      <tr><td>Guests</td><td>" + guests + "</td></tr>" +
+               "      <tr><td>Price / Night</td><td>₹" + String.format("%.2f", pricePerNight) + "</td></tr>" +
+               (discountAmount > 0
+                   ? "<tr><td>Discount</td><td>- ₹" + String.format("%.2f", discountAmount) + "</td></tr>"
                    : "") +
-               "      <tr class='total-row'><td>Total Price</td><td>₹" + String.format("%.2f", booking.getTotalPrice()) + "</td></tr>" +
+               "      <tr class='total-row'><td>Total Price</td><td>₹" + String.format("%.2f", totalPrice) + "</td></tr>" +
                "      <tr><td>Status</td><td><span class='badge'>CONFIRMED</span></td></tr>" +
                "    </table>" +
                "    <p>Please present this confirmation at check-in. We hope you enjoy your stay!</p>" +
@@ -163,8 +194,9 @@ public class EmailService {
     }
 
     private String buildBookingCancellationHtml(String userName, BookingResponse booking) {
-        String checkIn  = booking.getCheckInDate()  != null ? booking.getCheckInDate().format(DATE_FMT)  : "-";
-        String checkOut = booking.getCheckOutDate() != null ? booking.getCheckOutDate().format(DATE_FMT) : "-";
+        String checkIn  = (booking != null && booking.getCheckInDate() != null)  ? booking.getCheckInDate().format(DATE_FMT)  : "-";
+        String checkOut = (booking != null && booking.getCheckOutDate() != null) ? booking.getCheckOutDate().format(DATE_FMT) : "-";
+        double totalPrice = (booking != null && booking.getTotalPrice() != null) ? booking.getTotalPrice() : 0.0;
 
         return "<!DOCTYPE html>" +
                "<html><head><meta charset='UTF-8'>" +
@@ -187,12 +219,12 @@ public class EmailService {
                "    <h2>Hi " + escapeHtml(userName) + ", your booking has been cancelled.</h2>" +
                "    <p>The following reservation has been successfully cancelled:</p>" +
                "    <table>" +
-               "      <tr><td>Reservation No.</td><td>" + escapeHtml(booking.getReservationNumber()) + "</td></tr>" +
-               "      <tr><td>Hotel</td><td>" + escapeHtml(booking.getHotelName()) + ", " + escapeHtml(booking.getHotelCity()) + "</td></tr>" +
-               "      <tr><td>Room Category</td><td>" + escapeHtml(booking.getRoomCategory()) + "</td></tr>" +
+               "      <tr><td>Reservation No.</td><td>" + escapeHtml(booking != null ? booking.getReservationNumber() : "") + "</td></tr>" +
+               "      <tr><td>Hotel</td><td>" + escapeHtml(booking != null ? booking.getHotelName() : "") + ", " + escapeHtml(booking != null ? booking.getHotelCity() : "") + "</td></tr>" +
+               "      <tr><td>Room Category</td><td>" + escapeHtml(booking != null ? booking.getRoomCategory() : "") + "</td></tr>" +
                "      <tr><td>Check-in</td><td>" + checkIn + "</td></tr>" +
                "      <tr><td>Check-out</td><td>" + checkOut + "</td></tr>" +
-               "      <tr><td>Total Price</td><td>₹" + String.format("%.2f", booking.getTotalPrice()) + "</td></tr>" +
+               "      <tr><td>Total Price</td><td>₹" + String.format("%.2f", totalPrice) + "</td></tr>" +
                "      <tr><td>Status</td><td><span class='badge'>CANCELLED</span></td></tr>" +
                "    </table>" +
                "    <p>If you believe this was a mistake, please contact our support team.</p>" +

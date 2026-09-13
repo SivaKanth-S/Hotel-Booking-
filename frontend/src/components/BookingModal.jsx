@@ -65,7 +65,6 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
 
   const nights = calculateNights();
   const basePrice = (room.pricePerNight || 200) * nights;
-  const taxesAndFees = Math.round(basePrice * 0.12);
 
   let discountAmount = 0;
   if (promoDiscount) {
@@ -76,7 +75,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
     }
   }
 
-  const finalTotal = Math.max(0, basePrice + taxesAndFees - discountAmount);
+  const finalTotal = Math.max(0, basePrice - discountAmount);
 
   // Validate Promo Code
   const handleApplyPromo = async (e) => {
@@ -120,7 +119,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
     }
 
     const todayStr = formatLocalDate(new Date());
-    if (checkInDate < todayStr) {
+    if (new Date(checkInDate) < new Date(todayStr)) {
       showError('Check-in date must be today or a future date');
       return;
     }
@@ -144,7 +143,12 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
       setConfirmedBooking(response);
       showSuccess('Reservation confirmed successfully!');
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Failed to complete booking. Rooms may be sold out for selected dates.';
+      const msg =
+        err.userMessage ||
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Failed to complete booking. Rooms may be sold out for selected dates.';
       showError(msg);
     } finally {
       setSubmitting(false);
@@ -361,10 +365,6 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
                   <span>₹{Number(room.pricePerNight).toLocaleString('en-IN')} &times; {nights} {nights === 1 ? 'night' : 'nights'}</span>
                   <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>₹{Number(basePrice).toLocaleString('en-IN')}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
-                  <span>Estimated Taxes & Fees (12%)</span>
-                  <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>₹{Number(taxesAndFees).toLocaleString('en-IN')}</span>
                 </div>
 
                 {discountAmount > 0 && (

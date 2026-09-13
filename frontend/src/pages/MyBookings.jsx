@@ -73,12 +73,9 @@ export const MyBookings = () => {
     try {
       await bookingService.cancelBooking(bookingId);
       showSuccess('Reservation cancelled successfully. Room availability restored.');
-      // Refresh
-      setBookings((prev) =>
-        prev.map((b) => (b.id === bookingId ? { ...b, status: 'CANCELLED' } : b))
-      );
+      await fetchBookings();
     } catch (err) {
-      showError(err.response?.data?.message || 'Failed to cancel reservation');
+      showError(err.userMessage || err.response?.data?.message || 'Failed to cancel reservation');
     } finally {
       setCancellingId(null);
     }
