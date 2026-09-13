@@ -175,37 +175,73 @@ export const Navbar = () => {
             )}
           </button>
 
-          {/* User Auth Buttons */}
+          {/* User Auth / Account Buttons */}
           {isAuthenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '6px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 12px',
-                background: 'var(--bg-glass)',
-                borderRadius: '8px',
-                border: '1px solid var(--border-glass)'
-              }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '6px' }}>
+              <Link
+                to="/profile"
+                id="account-btn"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '5px 14px',
+                  background: 'var(--bg-glass)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-glass)',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--primary)';
+                  e.currentTarget.style.background = 'var(--primary-light)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border-glass)';
+                  e.currentTarget.style.background = 'var(--bg-glass)';
+                  e.currentTarget.style.transform = 'none';
+                }}
+                title="View Account Profile & Settings"
+              >
                 <div style={{
-                  width: '28px',
-                  height: '28px',
+                  width: '30px',
+                  height: '30px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                  background: isAdmin
+                    ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+                    : 'linear-gradient(135deg, var(--primary), var(--secondary))',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '0.85rem',
                   fontWeight: 700,
-                  color: '#ffffff'
+                  color: '#ffffff',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                 }}>
-                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  {user?.name ? user.name.charAt(0).toUpperCase() : (isAdmin ? 'A' : 'U')}
                 </div>
-                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-heading)' }}>
-                  {user?.name || 'Guest'}
-                </span>
-              </div>
-              <button onClick={handleLogout} className="btn btn-secondary btn-sm" title="Log Out">
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-heading)' }}>
+                      {user?.name || (isAdmin ? 'Administrator' : 'Guest')}
+                    </span>
+                    {isAdmin && (
+                      <span className="badge badge-gold" style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
+                        Admin
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="btn btn-secondary btn-sm"
+                title="Log Out"
+                style={{ padding: '8px 10px' }}
+              >
                 <LogOut size={16} />
               </button>
             </div>

@@ -12,6 +12,7 @@ import { AdminCustomers } from './pages/AdminCustomers';
 import { AdminLogin } from './pages/AdminLogin';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Profile } from './pages/Profile';
 
 export const App = () => {
   return (
@@ -23,6 +24,7 @@ export const App = () => {
           <Route path="/hotels" element={<HotelList />} />
           <Route path="/hotels/:id" element={<HotelDetail />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/bookings" element={<AdminBookings />} />
           <Route path="/admin/customers" element={<AdminCustomers />} />

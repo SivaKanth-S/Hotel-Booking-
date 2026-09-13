@@ -6,7 +6,7 @@ import { hotelService } from '../services/hotelService';
 import { roomService } from '../services/roomService';
 import { bookingService } from '../services/bookingService';
 import { userService } from '../services/userService';
-import { AdminNav } from '../components/AdminNav';
+
 import { Shield, Plus, Building2, Bed, CalendarCheck, DollarSign, X, Check, Trash2, Edit, Users, Mail, User, Phone, Search } from 'lucide-react';
 import { TN_DISTRICTS, TN_HOTELS } from '../data/tnData';
 import { handleImageError, DEFAULT_HOTEL_IMAGE, DEFAULT_ROOM_IMAGE } from '../utils/imageUtils';
@@ -238,9 +238,6 @@ export const AdminDashboard = () => {
           </button>
         </div>
       </div>
-
-      {/* Admin Navigation Bar */}
-      <AdminNav activeTab="HOTELS" />
 
       {/* KPI Metrics Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '36px' }}>

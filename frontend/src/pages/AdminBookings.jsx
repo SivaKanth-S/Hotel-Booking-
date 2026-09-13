@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { bookingService } from '../services/bookingService';
-import { AdminNav } from '../components/AdminNav';
+
 import { Shield, CalendarCheck, Search, Mail, User, CheckCircle2, XCircle, RotateCcw, Bed, DollarSign, Users } from 'lucide-react';
 
 export const AdminBookings = () => {
@@ -124,8 +124,6 @@ export const AdminBookings = () => {
         </p>
       </div>
 
-      {/* Admin Navigation Bar */}
-      <AdminNav activeTab="BOOKINGS" />
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>

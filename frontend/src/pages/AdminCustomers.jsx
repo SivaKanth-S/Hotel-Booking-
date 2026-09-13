@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { userService } from '../services/userService';
 import { bookingService } from '../services/bookingService';
-import { AdminNav } from '../components/AdminNav';
+
 import { Shield, Users, Mail, User, Calendar, DollarSign, Search, X, CalendarCheck, CheckCircle2, Clock, Phone, ArrowRight, Bed } from 'lucide-react';
 
 export const AdminCustomers = () => {
@@ -129,8 +129,6 @@ export const AdminCustomers = () => {
         </p>
       </div>
 
-      {/* Admin Navigation Bar */}
-      <AdminNav activeTab="CUSTOMERS" />
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>

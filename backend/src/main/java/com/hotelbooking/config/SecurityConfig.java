@@ -77,6 +77,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/rooms/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/rooms/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/promotions/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/users/me").authenticated()
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 
                 // Bookings: Authenticated users
