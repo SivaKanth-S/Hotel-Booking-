@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Hotel, User, LogOut, Shield, Calendar, Search, Sun, Moon, Menu, X } from 'lucide-react';
+import { Hotel, User, LogOut, Shield, Calendar, Search, Sun, Moon, Menu, X, Building2, CalendarCheck, Users } from 'lucide-react';
 
 export const Navbar = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -58,49 +58,100 @@ export const Navbar = () => {
 
         {/* Desktop Navigation Links & Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '22px' }} className="desktop-nav">
-          <Link
-            to="/"
-            style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s' }}
-            onMouseEnter={(e) => e.target.style.color = 'var(--text-heading)'}
-            onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
-          >
-            Home
-          </Link>
-          <Link
-            to="/hotels"
-            style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}
-            onMouseEnter={(e) => e.target.style.color = 'var(--text-heading)'}
-            onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
-          >
-            <Search size={16} /> Explore Hotels
-          </Link>
+          {!isAdmin && (
+            <>
+              <Link
+                to="/"
+                style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s' }}
+                onMouseEnter={(e) => e.target.style.color = 'var(--text-heading)'}
+                onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+              >
+                Home
+              </Link>
+              <Link
+                to="/hotels"
+                style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}
+                onMouseEnter={(e) => e.target.style.color = 'var(--text-heading)'}
+                onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+              >
+                <Search size={16} /> Explore Hotels
+              </Link>
 
-          {isAuthenticated && (
-            <Link
-              to="/my-bookings"
-              style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}
-              onMouseEnter={(e) => e.target.style.color = 'var(--text-heading)'}
-              onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
-            >
-              <Calendar size={16} /> My Bookings
-            </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/my-bookings"
+                  style={{ color: 'var(--text-secondary)', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  onMouseEnter={(e) => e.target.style.color = 'var(--text-heading)'}
+                  onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+                >
+                  <Calendar size={16} /> My Bookings
+                </Link>
+              )}
+            </>
           )}
 
           {isAdmin && (
-            <Link to="/admin" style={{
-              background: 'var(--primary-light)',
-              color: 'var(--primary)',
-              border: '1px solid var(--border-glass-hover)',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              fontWeight: 600,
-              fontSize: '0.85rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <Shield size={15} /> Admin Portal
-            </Link>
+            <>
+              <Link to="/admin" style={{
+                color: 'var(--text-secondary)',
+                fontWeight: 500,
+                fontSize: '0.88rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: '0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.color = 'var(--primary)'}
+              onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+              >
+                <Building2 size={16} /> Hotels
+              </Link>
+
+              <Link to="/admin/bookings" style={{
+                color: 'var(--text-secondary)',
+                fontWeight: 500,
+                fontSize: '0.88rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: '0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.color = 'var(--primary)'}
+              onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+              >
+                <CalendarCheck size={16} /> Hotel Bookings
+              </Link>
+
+              <Link to="/admin/customers" style={{
+                color: 'var(--text-secondary)',
+                fontWeight: 500,
+                fontSize: '0.88rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: '0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.color = 'var(--primary)'}
+              onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+              >
+                <Users size={16} /> Customers
+              </Link>
+
+              <Link to="/admin" style={{
+                background: 'var(--primary-light)',
+                color: 'var(--primary)',
+                border: '1px solid var(--border-glass-hover)',
+                padding: '6px 14px',
+                borderRadius: '20px',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <Shield size={15} /> Admin Portal
+              </Link>
+            </>
           )}
 
           {/* Theme Toggle Button */}

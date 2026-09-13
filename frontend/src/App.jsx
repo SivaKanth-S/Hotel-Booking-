@@ -7,6 +7,9 @@ import { HotelList } from './pages/HotelList';
 import { HotelDetail } from './pages/HotelDetail';
 import { MyBookings } from './pages/MyBookings';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminBookings } from './pages/AdminBookings';
+import { AdminCustomers } from './pages/AdminCustomers';
+import { AdminLogin } from './pages/AdminLogin';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 
@@ -21,6 +24,9 @@ export const App = () => {
           <Route path="/hotels/:id" element={<HotelDetail />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/customers" element={<AdminCustomers />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

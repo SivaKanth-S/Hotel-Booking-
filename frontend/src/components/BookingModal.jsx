@@ -6,6 +6,13 @@ import { bookingService } from '../services/bookingService';
 import { promotionService } from '../services/promotionService';
 import { X, Calendar, Users, Tag, CheckCircle2, ShieldCheck, Copy, Check } from 'lucide-react';
 
+const formatLocalDate = (d) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }) => {
   const { isAuthenticated, user } = useAuth();
   const { showSuccess, showError } = useNotification();
@@ -21,18 +28,28 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
   const [confirmedBooking, setConfirmedBooking] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  // Set default dates if empty
+  // Sync initial dates and reset modal state on open
   useEffect(() => {
-    if (!checkInDate || !checkOutDate) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const dayAfter = new Date();
-      dayAfter.setDate(dayAfter.getDate() + 4);
+    if (isOpen) {
+      setConfirmedBooking(null);
+      setCopied(false);
+      setPromoDiscount(null);
+      setPromoCode('');
 
-      setCheckInDate(tomorrow.toISOString().split('T')[0]);
-      setCheckOutDate(dayAfter.toISOString().split('T')[0]);
+      if (initialDates.checkIn && initialDates.checkOut) {
+        setCheckInDate(initialDates.checkIn);
+        setCheckOutDate(initialDates.checkOut);
+      } else if (!checkInDate || !checkOutDate) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dayAfter = new Date();
+        dayAfter.setDate(dayAfter.getDate() + 4);
+
+        setCheckInDate(formatLocalDate(tomorrow));
+        setCheckOutDate(formatLocalDate(dayAfter));
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, room?.id, initialDates.checkIn, initialDates.checkOut]);
 
   if (!isOpen || !room) return null;
 
@@ -102,6 +119,12 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
       return;
     }
 
+    const todayStr = formatLocalDate(new Date());
+    if (checkInDate < todayStr) {
+      showError('Check-in date must be today or a future date');
+      return;
+    }
+
     if (new Date(checkOutDate) <= new Date(checkInDate)) {
       showError('Check-out date must be after check-in date');
       return;
@@ -121,7 +144,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
       setConfirmedBooking(response);
       showSuccess('Reservation confirmed successfully!');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to complete booking. Rooms may be sold out for selected dates.';
+      const msg = err.response?.data?.message || err.message || 'Failed to complete booking. Rooms may be sold out for selected dates.';
       showError(msg);
     } finally {
       setSubmitting(false);
@@ -266,6 +289,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                   <input
                     type="date"
                     required
+                    min={new Date().toISOString().split('T')[0]}
                     value={checkInDate}
                     onChange={(e) => setCheckInDate(e.target.value)}
                     className="form-input"
@@ -276,6 +300,7 @@ export const BookingModal = ({ isOpen, onClose, hotel, room, initialDates = {} }
                   <input
                     type="date"
                     required
+                    min={checkInDate || new Date().toISOString().split('T')[0]}
                     value={checkOutDate}
                     onChange={(e) => setCheckOutDate(e.target.value)}
                     className="form-input"

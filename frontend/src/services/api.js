@@ -29,7 +29,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // If unauthorized on a protected call, clear credentials
       const currentPath = window.location.pathname;
-      if (currentPath !== '/login' && currentPath !== '/register') {
+      if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/admin/login') {
         localStorage.removeItem('grandstay_jwt');
         localStorage.removeItem('grandstay_user');
       }

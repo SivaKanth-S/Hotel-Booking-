@@ -30,6 +30,9 @@ public class AuthControllerTest {
     private static final String TEST_EMAIL = "customer@example.com";
     private static final String TEST_PASSWORD = "Customer@123";
 
+    private static final String ADMIN_EMAIL = "admin@gmail.com";
+    private static final String ADMIN_PASSWORD = "admin123";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -61,6 +64,23 @@ public class AuthControllerTest {
             );
             userRepository.save(testUser);
         }
+
+        userRepository.findByEmail(ADMIN_EMAIL).ifPresentOrElse(
+                admin -> {
+                    admin.setPasswordHash(passwordEncoder.encode(ADMIN_PASSWORD));
+                    admin.setRole(Role.ADMIN);
+                    userRepository.save(admin);
+                },
+                () -> {
+                    User adminUser = new User(
+                            "Admin",
+                            ADMIN_EMAIL,
+                            passwordEncoder.encode(ADMIN_PASSWORD),
+                            Role.ADMIN
+                    );
+                    userRepository.save(adminUser);
+                }
+        );
     }
 
     @Test
@@ -74,6 +94,19 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.email").value(TEST_EMAIL))
                 .andExpect(jsonPath("$.role").value("CUSTOMER"));
+    }
+
+    @Test
+    public void testAdminLoginSuccess() throws Exception {
+        AuthRequest request = new AuthRequest(ADMIN_EMAIL, ADMIN_PASSWORD);
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.email").value(ADMIN_EMAIL))
+                .andExpect(jsonPath("$.role").value("ADMIN"));
     }
 
     @Test

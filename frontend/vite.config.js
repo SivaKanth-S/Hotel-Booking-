@@ -12,5 +12,18 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/test/setup.js'],
+    css: false,
+    pool: 'vmThreads',
+    poolOptions: {
+      vmThreads: {
+        maxThreads: 2,
+        minThreads: 1
+      }
+    }
   }
 });

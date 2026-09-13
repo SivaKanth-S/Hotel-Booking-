@@ -8,6 +8,9 @@ public class BookingResponse {
 
     private Long id;
     private String reservationNumber;
+    private Long userId;
+    private String userName;
+    private String userEmail;
     private Long hotelId;
     private String hotelName;
     private String hotelCity;
@@ -40,6 +43,30 @@ public class BookingResponse {
 
     public void setReservationNumber(String reservationNumber) {
         this.reservationNumber = reservationNumber;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public Long getHotelId() {

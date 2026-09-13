@@ -52,7 +52,7 @@ public class BookingService {
     // -----------------------------------------------------------------------
     // CREATE BOOKING
     // -----------------------------------------------------------------------
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public BookingResponse createBooking(Long userId, BookingRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -64,8 +64,14 @@ public class BookingService {
         if (request.getCheckInDate() == null || request.getCheckOutDate() == null) {
             throw new BadRequestException("Check-in and check-out dates are required");
         }
+        if (request.getCheckInDate().isBefore(LocalDate.now())) {
+            throw new BadRequestException("Check-in date must be today or a future date");
+        }
         if (!request.getCheckOutDate().isAfter(request.getCheckInDate())) {
             throw new BadRequestException("Check-out date must be after check-in date");
+        }
+        if (request.getNumGuests() == null || request.getNumGuests() <= 0) {
+            throw new BadRequestException("Number of guests must be at least 1");
         }
         if (request.getNumGuests() > room.getCapacity()) {
             throw new BadRequestException("Guest count exceeds maximum room capacity of " + room.getCapacity());
@@ -243,23 +249,43 @@ public class BookingService {
         return sb.toString();
     }
 
-    private BookingResponse mapToResponse(Booking booking, Double discountAmount) {
+    private BookingResponse mapToResponse(Booking booking, double discountAmount) {
         BookingResponse res = new BookingResponse();
         res.setId(booking.getId());
         res.setReservationNumber(booking.getReservationNumber());
-        res.setHotelId(booking.getRoom().getHotel().getId());
-        res.setHotelName(booking.getRoom().getHotel().getName());
-        res.setHotelCity(booking.getRoom().getHotel().getCity());
-        res.setRoomId(booking.getRoom().getId());
-        res.setRoomCategory(booking.getRoom().getCategory());
+        if (booking.getUser() != null) {
+            res.setUserId(booking.getUser().getId());
+            res.setUserName(booking.getUser().getName());
+            res.setUserEmail(booking.getUser().getEmail());
+        }
+        if (booking.getRoom() != null) {
+            res.setRoomId(booking.getRoom().getId());
+            res.setRoomCategory(booking.getRoom().getCategory());
+            res.setPricePerNight(booking.getRoom().getPricePerNight());
+            if (booking.getRoom().getHotel() != null) {
+                res.setHotelId(booking.getRoom().getHotel().getId());
+                res.setHotelName(booking.getRoom().getHotel().getName());
+                res.setHotelCity(booking.getRoom().getHotel().getCity());
+            }
+        }
         res.setCheckInDate(booking.getCheckInDate());
         res.setCheckOutDate(booking.getCheckOutDate());
         res.setNumGuests(booking.getNumGuests());
 
-        long nights = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
-        res.setTotalNights(nights);
-        res.setPricePerNight(booking.getRoom().getPricePerNight());
-        res.setDiscountAmount(discountAmount);
+        if (booking.getCheckInDate() != null && booking.getCheckOutDate() != null) {
+            long nights = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
+            res.setTotalNights(nights);
+        }
+        double discount = discountAmount;
+        if (discount == 0.0 && booking.getPromotion() != null && booking.getRoom() != null && res.getTotalNights() != null) {
+            double base = booking.getRoom().getPricePerNight() * res.getTotalNights();
+            if (booking.getPromotion().getDiscountType() == DiscountType.PERCENTAGE) {
+                discount = (base * booking.getPromotion().getDiscountValue()) / 100.0;
+            } else {
+                discount = booking.getPromotion().getDiscountValue();
+            }
+        }
+        res.setDiscountAmount(discount);
         res.setTotalPrice(booking.getTotalPrice());
         res.setStatus(booking.getStatus());
         res.setCreatedAt(booking.getCreatedAt());
