@@ -1,23 +1,23 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://127.0.0.1:3306/hotel_booking?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: jdbc:h2:mem:hotel_booking;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: create-drop
+    show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
     open-in-view: false
 
   mail:
-    host: ${MAIL_HOST:localhost}
-    port: ${MAIL_PORT:25}
-    username: ${MAIL_USERNAME:test@example.com}
-    password: ${MAIL_PASSWORD:test}
+    host: localhost
+    port: 25
+    username: test@example.com
+    password: test
 
 app:
   jwt:
@@ -26,3 +26,8 @@ app:
   mail:
     from: test@example.com
     from-name: Hotel Booking Test
+
+logging:
+  level:
+    com.hotelbooking: WARN
+

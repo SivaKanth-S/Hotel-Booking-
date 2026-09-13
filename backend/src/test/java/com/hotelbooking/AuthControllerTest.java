@@ -3,13 +3,22 @@ package com.hotelbooking;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hotelbooking.dto.AuthRequest;
 import com.hotelbooking.dto.RegisterRequest;
+import com.hotelbooking.entity.Role;
+import com.hotelbooking.entity.User;
+import com.hotelbooking.repository.UserRepository;
+import com.hotelbooking.service.EmailService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,28 +27,58 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class AuthControllerTest {
 
+    private static final String TEST_EMAIL = "customer@example.com";
+    private static final String TEST_PASSWORD = "Customer@123";
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // Prevents real SMTP connection attempts during testing
+    @MockBean
+    private EmailService emailService;
+
+    @BeforeEach
+    public void setUp() {
+        doNothing().when(emailService).sendWelcomeEmail(any(), any());
+        doNothing().when(emailService).sendBookingConfirmationEmail(any(), any(), any());
+        doNothing().when(emailService).sendBookingCancellationEmail(any(), any(), any());
+
+        if (userRepository.findByEmail(TEST_EMAIL).isEmpty()) {
+            User testUser = new User(
+                    "Test Customer",
+                    TEST_EMAIL,
+                    passwordEncoder.encode(TEST_PASSWORD),
+                    Role.CUSTOMER
+            );
+            userRepository.save(testUser);
+        }
+    }
+
     @Test
     public void testLoginSuccess() throws Exception {
-        AuthRequest request = new AuthRequest("customer@example.com", "Customer@123");
+        AuthRequest request = new AuthRequest(TEST_EMAIL, TEST_PASSWORD);
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.email").value("customer@example.com"))
+                .andExpect(jsonPath("$.email").value(TEST_EMAIL))
                 .andExpect(jsonPath("$.role").value("CUSTOMER"));
     }
 
     @Test
     public void testLoginInvalidCredentials() throws Exception {
-        AuthRequest request = new AuthRequest("customer@example.com", "WrongPassword!");
+        AuthRequest request = new AuthRequest(TEST_EMAIL, "WrongPassword123");
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -50,14 +89,15 @@ public class AuthControllerTest {
 
     @Test
     public void testRegisterNewCustomer() throws Exception {
-        String uniqueEmail = "testuser_" + System.currentTimeMillis() + "@example.com";
-        RegisterRequest request = new RegisterRequest("Test User", uniqueEmail, "SecretPass123");
+        String uniqueEmail = "newuser_" + System.currentTimeMillis() + "@example.com";
+        RegisterRequest request = new RegisterRequest("New Customer", uniqueEmail, "SecretPass@123");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.email").value(uniqueEmail));
+                .andExpect(jsonPath("$.email").value(uniqueEmail))
+                .andExpect(jsonPath("$.role").value("CUSTOMER"));
     }
 }
